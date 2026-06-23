@@ -1,0 +1,60 @@
+# ── Dependencies ──────────────────────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build outputs ─────────────────────────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+
+# ── Environment files (NEVER commit secrets) ──────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── OS & Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Vite cache ────────────────────────────────────────────────────────────────
+.vite/
+frontend/.vite/
+
+# ── NestJS / TypeScript ───────────────────────────────────────────────────────
+backend/dist/
+backend/node_modules/
+frontend/node_modules/
+
+# ── Prisma generated ──────────────────────────────────────────────────────────
+backend/src/generated/
+
+# ── Uploads / generated PDFs ─────────────────────────────────────────────────
+backend/uploads/
+backend/src/uploads/
+
+# ── Test coverage ─────────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+.cache/
+scratch/

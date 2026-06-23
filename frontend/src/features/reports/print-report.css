@@ -1,0 +1,240 @@
+/* ─── Print Stylesheet for Report PDF Export ──────────────────────────────── */
+
+@media print {
+  /* Hide all UI chrome */
+  nav, aside, header,
+  .sidebar, .dashboard-layout > aside,
+  .no-print, [data-no-print],
+  button, .modal-overlay,
+  .glass-card::before {
+    display: none !important;
+  }
+
+  /* Reset backgrounds */
+  body, html, .dashboard-layout, .dashboard-layout > main, main {
+    background: #ffffff !important;
+    color: #1a1a2e !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    /* removed unsupported color-adjust */
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Report container */
+  .report-print-container {
+    padding: 20mm 15mm !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  /* Report header */
+  .report-print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #6366f1;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .report-print-header h1 {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #1a1a2e !important;
+    margin: 0;
+  }
+
+  .report-print-header .report-meta {
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.8;
+  }
+
+  .report-print-company {
+    font-size: 24px;
+    font-weight: 900;
+    color: #6366f1;
+    letter-spacing: -0.5px;
+  }
+
+  /* KPI cards row */
+  .report-print-kpis {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .report-print-kpi {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    background: #f8fafc !important;
+  }
+
+  .report-print-kpi .kpi-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1a1a2e;
+  }
+
+  .report-print-kpi .kpi-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-top: 4px;
+  }
+
+  /* Chart sections */
+  .report-print-section {
+    margin-bottom: 24px;
+    page-break-inside: avoid;
+  }
+
+  .report-print-section h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a2e;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+
+  /* Chart containers - ensure SVG renders properly */
+  .recharts-wrapper, .recharts-surface {
+    max-width: 100% !important;
+  }
+
+  .recharts-cartesian-grid-bg { fill: none !important; }
+  .recharts-text { fill: #1a1a2e !important; }
+  .recharts-legend-item-text { color: #1a1a2e !important; }
+
+  /* Tables */
+  .report-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 16px;
+  }
+
+  .report-print-table th {
+    background: #f1f5f9 !important;
+    color: #1a1a2e;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 9px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+  }
+
+  .report-print-table td {
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+  }
+
+  .report-print-table tr:nth-child(even) {
+    background: #f8fafc !important;
+  }
+
+  /* AI Insights block */
+  .report-print-insights {
+    border: 2px solid #6366f1;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    page-break-inside: avoid;
+    background: #f8fafc !important;
+  }
+
+  .report-print-insights h3 {
+    color: #6366f1;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    border: none;
+    padding: 0;
+  }
+
+  .report-print-insights ul {
+    padding-left: 16px;
+    margin: 0 0 12px 0;
+  }
+
+  .report-print-insights li {
+    font-size: 11px;
+    color: #334155;
+    margin-bottom: 4px;
+    line-height: 1.6;
+  }
+
+  .report-print-insights .insight-category {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #1a1a2e;
+    margin: 8px 0 4px 0;
+  }
+
+  /* Footer */
+  .report-print-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 12px;
+    margin-top: 24px;
+    font-size: 9px;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Page breaks */
+  .page-break-before { page-break-before: always; }
+  .page-break-after { page-break-after: always; }
+
+  /* Status badges for print */
+  .print-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .print-status-approved { background: #d1fae5 !important; color: #065f46 !important; }
+  .print-status-pending { background: #fef3c7 !important; color: #92400e !important; }
+  .print-status-rejected { background: #fee2e2 !important; color: #991b1b !important; }
+
+  /* Progress bars for print */
+  .print-progress-bar {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .print-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: #6366f1;
+  }
+}
+
+/* Screen-only print button styling */
+@media screen {
+  .report-print-container .report-print-header,
+  .report-print-container .report-print-footer {
+    display: none;
+  }
+}

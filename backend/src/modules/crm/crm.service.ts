@@ -319,7 +319,7 @@ export class CrmService {
 
     const where: Prisma.ClientWhereInput = {
       isArchived: showArchived === true || query.isArchived === true,
-      ...(isActive !== undefined && { isActive }),
+      ...(resolvedIsActive !== undefined && { isActive: resolvedIsActive }),
       ...(industry && { industry: { contains: industry, mode: 'insensitive' } }),
       ...(search && {
         OR: [
@@ -342,6 +342,7 @@ export class CrmService {
         take,
         include: {
           createdBy: { select: { id: true, firstName: true, lastName: true } },
+          contacts: true,
           _count: { select: { contacts: true, projects: true, invoices: true } },
         },
         orderBy: { [validSortFields[sortBy] ?? 'createdAt']: sortOrder },
@@ -349,10 +350,16 @@ export class CrmService {
       this.prisma.client.count({ where }),
     ]);
 
-    const mappedData = data.map(client => ({
-      ...client,
-      name: client.companyName,
-    }));
+    const mappedData = data.map(client => {
+      const primaryContact = client.contacts.find(c => c.isPrimary) || client.contacts[0];
+      return {
+        ...client,
+        name: client.companyName,
+        email: primaryContact?.email || null,
+        phone: primaryContact?.phone || null,
+        status: client.isActive ? 'ACTIVE' : 'INACTIVE',
+      };
+    });
 
     return paginate(mappedData, total, page, limit);
   }
@@ -370,17 +377,29 @@ export class CrmService {
     });
 
     if (!client) throw new NotFoundException(`Client with ID "${id}" not found`);
+    const primaryContact = client.contacts.find(c => c.isPrimary) || client.contacts[0];
     return {
       ...client,
       name: client.companyName,
+      email: primaryContact?.email || null,
+      phone: primaryContact?.phone || null,
+      status: client.isActive ? 'ACTIVE' : 'INACTIVE',
     };
   }
 
   async createClient(dto: CreateClientDto, creatorId: string) {
-    const companyName = dto.companyName || dto.name;
+    const companyName = dto.companyName || dto.company || dto.name;
     if (!companyName) {
       throw new BadRequestException('Company name is required.');
     }
+
+    let isActive = true;
+    if (dto.isActive !== undefined) {
+      isActive = dto.isActive;
+    } else if (dto.status !== undefined) {
+      isActive = dto.status === 'ACTIVE';
+    }
+
     const client = await this.prisma.client.create({
       data: {
         companyName,
@@ -390,32 +409,93 @@ export class CrmService {
         city: dto.city,
         country: dto.country || 'Tunisia',
         taxId: dto.taxId,
-        isActive: dto.isActive !== undefined ? dto.isActive : true,
+        isActive,
         leadId: dto.leadId,
         createdById: creatorId,
       },
     });
+
+    if (dto.email || dto.phone || dto.name) {
+      const names = (dto.name || 'Contact').split(' ');
+      const firstName = names[0] || 'Contact';
+      const lastName = names.slice(1).join(' ') || companyName;
+
+      await this.prisma.clientContact.create({
+        data: {
+          clientId: client.id,
+          firstName,
+          lastName,
+          email: dto.email || null,
+          phone: dto.phone || null,
+          position: 'Directeur',
+          isPrimary: true,
+        },
+      });
+    }
+
     return {
       ...client,
       name: client.companyName,
+      email: dto.email || null,
+      phone: dto.phone || null,
+      status: client.isActive ? 'ACTIVE' : 'INACTIVE',
     };
   }
 
   async updateClient(id: string, dto: UpdateClientDto) {
-    await this.findClientById(id);
-    const companyName = dto.companyName || dto.name;
-    const { name, ...rest } = dto;
+    const existing = await this.findClientById(id);
+    const companyName = dto.companyName || dto.company || dto.name;
+    const { name, email, phone, company, status, isActive, ...rest } = dto;
+
+    let resolvedIsActive = isActive;
+    if (resolvedIsActive === undefined && status !== undefined) {
+      resolvedIsActive = status === 'ACTIVE';
+    }
+
     const updated = await this.prisma.client.update({
       where: { id },
       data: {
         ...rest,
         ...(companyName && { companyName }),
+        ...(resolvedIsActive !== undefined && { isActive: resolvedIsActive }),
       },
     });
-    return {
-      ...updated,
-      name: updated.companyName,
-    };
+
+    if (email !== undefined || phone !== undefined || name !== undefined) {
+      const primaryContact = await this.prisma.clientContact.findFirst({
+        where: { clientId: id, isPrimary: true },
+      });
+
+      if (primaryContact) {
+        await this.prisma.clientContact.update({
+          where: { id: primaryContact.id },
+          data: {
+            ...(email !== undefined && { email: email || null }),
+            ...(phone !== undefined && { phone: phone || null }),
+            ...(name !== undefined && {
+              firstName: name.split(' ')[0] || 'Contact',
+              lastName: name.split(' ').slice(1).join(' ') || updated.companyName,
+            }),
+          },
+        });
+      } else {
+        const contactName = name || existing.name || 'Contact';
+        await this.prisma.clientContact.create({
+          data: {
+            clientId: id,
+            firstName: contactName.split(' ')[0] || 'Contact',
+            lastName: contactName.split(' ').slice(1).join(' ') || updated.companyName,
+            email: email || null,
+            phone: phone || null,
+            position: 'Directeur',
+            isPrimary: true,
+          },
+        });
+      }
+    }
+
+    const finalClient = await this.findClientById(id);
+    return finalClient;
   }
 
   async deleteClient(id: string) {

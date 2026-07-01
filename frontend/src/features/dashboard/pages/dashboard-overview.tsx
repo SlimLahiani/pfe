@@ -61,7 +61,10 @@ export const DashboardOverview: React.FC = () => {
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('fr-TN', { style: 'currency', currency: 'TND' }).format(val);
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3
+    }).format(Number(val) || 0) + ' TND';
   };
 
   // 1. CEO Dashboard

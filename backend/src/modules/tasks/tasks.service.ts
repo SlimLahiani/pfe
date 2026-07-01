@@ -165,12 +165,15 @@ export class TasksService {
   }
 
   async create(dto: CreateTaskDto, creatorUserId: string, currentUser?: any) {
+    console.log(`[TasksService] Creating task for creator ${creatorUserId} with dto:`, JSON.stringify(dto));
     if (currentUser) {
       const roleName = currentUser.role?.name;
       if (roleName === 'STAGIAIRE') {
+        console.warn(`[TasksService] Access denied: Intern ${currentUser.id} attempted to create a task.`);
         throw new ForbiddenException('Access denied: Interns cannot create tasks.');
       }
       if (roleName === 'COLLABORATEUR') {
+        console.warn(`[TasksService] Access denied: Employee ${currentUser.id} attempted to create a task.`);
         throw new ForbiddenException('Access denied: Employees cannot create tasks.');
       }
       if (roleName === 'CHEF_PROJET' && dto.projectId) {
@@ -178,36 +181,45 @@ export class TasksService {
           where: { projectId: dto.projectId, userId: currentUser.id },
         });
         if (!isMember) {
+          console.warn(`[TasksService] Access denied: Project Manager ${currentUser.id} attempted to create a task for project ${dto.projectId} without being a member.`);
           throw new ForbiddenException('Access denied: You can only create tasks for projects you are assigned to.');
         }
       }
     }
 
-    return this.prisma.task.create({
-      data: {
-        title: dto.title,
-        description: dto.description,
-        status: dto.status,
-        priority: dto.priority,
-        projectId: dto.projectId,
-        assigneeId: dto.assigneeId,
-        dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
-        estimatedHours: dto.estimatedHours,
-        parentTaskId: dto.parentTaskId,
-        createdById: creatorUserId,
-      },
-      include: {
-        assignee: {
-          select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+    try {
+      console.log(`[TasksService] Executing Prisma task.create for project ${dto.projectId} and assignee ${dto.assigneeId}`);
+      const task = await this.prisma.task.create({
+        data: {
+          title: dto.title,
+          description: dto.description,
+          status: dto.status,
+          priority: dto.priority,
+          projectId: dto.projectId,
+          assigneeId: dto.assigneeId,
+          dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
+          estimatedHours: dto.estimatedHours,
+          parentTaskId: dto.parentTaskId,
+          createdById: creatorUserId,
         },
-        createdBy: {
-          select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+        include: {
+          assignee: {
+            select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+          },
+          createdBy: {
+            select: { id: true, firstName: true, lastName: true, email: true, avatarUrl: true },
+          },
+          project: {
+            select: { id: true, name: true },
+          },
         },
-        project: {
-          select: { id: true, name: true },
-        },
-      },
-    });
+      });
+      console.log(`[TasksService] Task created successfully with id ${task.id}`);
+      return task;
+    } catch (error) {
+      console.error(`[TasksService] Database error during task creation:`, error);
+      throw error;
+    }
   }
 
   async update(id: string, dto: UpdateTaskDto, currentUser?: any) {

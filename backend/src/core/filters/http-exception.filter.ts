@@ -23,14 +23,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exceptionResponse.message
         : exceptionResponse;
 
-    console.error(`[Exception] ${request.method} ${request.url} - Status: ${status} - Error:`, exception);
+    if (status === 400 && exceptionResponse && typeof exceptionResponse === 'object') {
+      console.error(`[Validation-Error] ${request.method} ${request.url} - Validation failed:`, JSON.stringify(exceptionResponse));
+    } else {
+      console.error(`[Exception] ${request.method} ${request.url} - Status: ${status} - Error:`, exception);
+    }
 
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       message: Array.isArray(message) ? message[0] : message,
-      details: Array.isArray(message) ? message : undefined,
+      details: typeof exceptionResponse === 'object' && exceptionResponse.details
+        ? exceptionResponse.details
+        : (Array.isArray(message) ? message : undefined),
     });
   }
 }

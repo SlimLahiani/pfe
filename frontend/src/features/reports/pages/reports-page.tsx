@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   TrendingUp,
   Target,
@@ -15,6 +16,7 @@ import {
   RefreshCw,
   Loader2,
   Trash2,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../../../context/auth-context';
 import { StatCard, PageHeader } from '../../../components/shared/ui';
@@ -29,6 +31,8 @@ import {
   useComparisonAnalytics,
   useCreateReportSchedule,
   useProjects,
+  getReportPdfUrl,
+  downloadPdf,
 } from '../../../hooks/use-api';
 
 const subTypesByReportType: Record<string, string[]> = {
@@ -54,8 +58,11 @@ const formatDate = (dateString?: string | Date) => {
 
 export const ReportsPage: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const roleName = user?.role ? (typeof user.role === 'string' ? user.role : (user.role as any).name || '') : '';
   const isCEO = roleName === 'GERANT';
+  const isHrManager = roleName === 'RESPONSABLE_RH';
+  const isFinanceManager = roleName === 'RESPONSABLE_FINANCIER';
 
   // State
   const [activeTab, setActiveTab] = useState<string>(isCEO ? 'compare' : 'my-reports');
@@ -233,9 +240,9 @@ export const ReportsPage: React.FC = () => {
   // Statistics memo
   const stats = useMemo(() => {
     const total = reports.length;
-    const pending = reports.filter(r => r.status === 'PENDING_REVIEW').length;
-    const approved = reports.filter(r => r.status === 'APPROVED').length;
-    const rejected = reports.filter(r => r.status === 'REJECTED').length;
+    const pending = reports.filter(r => (r.workflowStatus === 'SUBMITTED') || r.status === 'PENDING_REVIEW').length;
+    const approved = reports.filter(r => (r.workflowStatus === 'APPROVED') || r.status === 'APPROVED').length;
+    const rejected = reports.filter(r => (r.workflowStatus === 'REJECTED') || r.status === 'REJECTED').length;
     return { total, pending, approved, rejected };
   }, [reports]);
 
@@ -250,8 +257,26 @@ export const ReportsPage: React.FC = () => {
               : `Générez et gérez les rapports d'activité pour le département ${roleName.replace('RESPONSABLE_', '')}`
           }
         />
-        <div className="flex items-center gap-2">
-          {allowedTypes.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {isHrManager && (
+            <button
+              onClick={() => navigate('/reports/new/hr')}
+              className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-violet-600/20 cursor-pointer"
+            >
+              <Plus size={16} />
+              Nouveau Rapport RH
+            </button>
+          )}
+          {isFinanceManager && (
+            <button
+              onClick={() => navigate('/reports/new/finance')}
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-emerald-600/20 cursor-pointer"
+            >
+              <Plus size={16} />
+              Nouveau Rapport Financier
+            </button>
+          )}
+          {!isHrManager && !isFinanceManager && allowedTypes.length > 0 && (
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-indigo-600/10 cursor-pointer"
@@ -480,13 +505,23 @@ export const ReportsPage: React.FC = () => {
                             <td className="py-4 pl-4 text-right" onClick={(e) => e.stopPropagation()}>
                               <div className="flex items-center justify-end gap-2">
                                 <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    downloadPdf(getReportPdfUrl(report.id), `${report.name}.pdf`);
+                                  }}
+                                  title="Exporter en PDF"
+                                  className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-muted-foreground hover:text-indigo-400 hover:bg-white/10 transition-all cursor-pointer"
+                                >
+                                  <Download size={14} />
+                                </button>
+                                <button
                                   onClick={() => handleRunReport(report.id)}
                                   title="Réexécuter et actualiser"
                                   className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-muted-foreground hover:text-indigo-400 hover:bg-white/10 transition-all cursor-pointer"
                                 >
                                   <RefreshCw size={14} />
                                 </button>
-                                {isCEO && report.status === 'PENDING_REVIEW' && (
+                                {isCEO && (report.status === 'PENDING_REVIEW' || report.workflowStatus === 'SUBMITTED') && (
                                   <button
                                     onClick={() => {
                                       setSelectedReportId(report.id);
@@ -537,26 +572,36 @@ export const ReportsPage: React.FC = () => {
                           Période : {selectedReportDetail.reportingPeriod}
                         </p>
                       </div>
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                          selectedReportDetail.status === 'APPROVED'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : selectedReportDetail.status === 'REJECTED'
-                            ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                        }`}
-                      >
-                        {selectedReportDetail.status.replace('_', ' ')}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => downloadPdf(getReportPdfUrl(selectedReportDetail.id), `${selectedReportDetail.name}.pdf`)}
+                          title="Télécharger en PDF"
+                          className="p-1.5 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/30 transition-all cursor-pointer"
+                        >
+                          <Download size={14} />
+                        </button>
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                            selectedReportDetail.status === 'APPROVED'
+                              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                              : selectedReportDetail.status === 'REJECTED'
+                              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                              : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                          }`}
+                        >
+                          {selectedReportDetail.status.replace('_', ' ')}
+                        </span>
+                      </div>
                     </div>
 
                     {/* CEO review block */}
-                    {isCEO && selectedReportDetail.status === 'PENDING_REVIEW' && (
+                    {isCEO && (selectedReportDetail.status === 'PENDING_REVIEW' || selectedReportDetail.workflowStatus === 'SUBMITTED') && (
                       <div className="p-4 bg-indigo-500/10 rounded-xl border border-indigo-500/20 space-y-3">
                         <p className="text-xs text-indigo-300 font-semibold">Validation du Rapport (Action CEO)</p>
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
+                              setSelectedReportId(selectedReportDetail.id);
                               setReviewActionType('approve');
                               setIsReviewModalOpen(true);
                             }}
@@ -567,6 +612,7 @@ export const ReportsPage: React.FC = () => {
                           </button>
                           <button
                             onClick={() => {
+                              setSelectedReportId(selectedReportDetail.id);
                               setReviewActionType('reject');
                               setIsReviewModalOpen(true);
                             }}

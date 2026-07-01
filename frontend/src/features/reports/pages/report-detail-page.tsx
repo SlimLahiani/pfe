@@ -1,14 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Printer, Sparkles, AlertTriangle, TrendingUp, Target,
   Check, FileText, RefreshCw, ThumbsUp, ThumbsDown, Clock,
-  Users, DollarSign, Briefcase, BarChart3,
+  Users, DollarSign, Briefcase, BarChart3, MessageSquare, Download, Send,
+  RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '../../../context/auth-context';
 import { StatCard } from '../../../components/shared/ui';
 import {
   useReport, useRunReport, useApproveReport, useRejectReport,
+  useAddReportComment, useRequestModifications,
+  getReportPdfUrl, getReportExcelUrl, downloadPdf,
 } from '../../../hooks/use-api';
 import {
   MonthlyTrendChart, ProfitTrendChart, StatusDistributionChart,
@@ -23,7 +26,12 @@ const formatDate = (d?: string | Date) => {
   return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
-const formatCurrency = (v: number) => `${v.toLocaleString()} TND`;
+const formatCurrency = (v: number) => {
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+  }).format(Number(v) || 0) + ' TND';
+};
 
 export const ReportDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,25 +41,44 @@ export const ReportDetailPage: React.FC = () => {
   const isCEO = roleName === 'GERANT';
   const printRef = useRef<HTMLDivElement>(null);
 
-  const { data: report, isLoading } = useReport(id);
+  const { data: report, isLoading, refetch } = useReport(id);
   const runMutation = useRunReport();
   const approveMutation = useApproveReport();
   const rejectMutation = useRejectReport();
+  const addCommentMutation = useAddReportComment();
+  const requestModMutation = useRequestModifications();
 
-  const [reviewComment, setReviewComment] = React.useState('');
-  const [showReviewModal, setShowReviewModal] = React.useState<'approve' | 'reject' | null>(null);
+  const [reviewComment, setReviewComment] = useState('');
+  const [showReviewModal, setShowReviewModal] = useState<'approve' | 'reject' | 'modify' | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   const handlePrint = () => window.print();
 
-  const handleReview = async (action: 'approve' | 'reject') => {
+  const handleReview = async (action: 'approve' | 'reject' | 'modify') => {
     if (!id) return;
     if (action === 'approve') {
       await approveMutation.mutateAsync({ id, comment: reviewComment });
-    } else {
+    } else if (action === 'reject') {
       await rejectMutation.mutateAsync({ id, reason: reviewComment });
+    } else {
+      await requestModMutation.mutateAsync({ id, comment: reviewComment });
     }
     setShowReviewModal(null);
     setReviewComment('');
+    refetch();
+  };
+
+  const handleAddComment = async () => {
+    if (!id || !commentText.trim()) return;
+    setSubmittingComment(true);
+    try {
+      await addCommentMutation.mutateAsync({ reportId: id, content: commentText.trim() });
+      setCommentText('');
+      refetch();
+    } finally {
+      setSubmittingComment(false);
+    }
   };
 
   if (isLoading) {
@@ -131,13 +158,29 @@ export const ReportDetailPage: React.FC = () => {
           </button>
           <button onClick={handlePrint}
             className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-lg shadow-indigo-600/20 cursor-pointer">
-            <Printer size={13} /> Exporter PDF
+            <Printer size={13} /> Imprimer
           </button>
-          {isCEO && report.status === 'PENDING_REVIEW' && (
+           {id && (
+            <>
+              <button onClick={() => downloadPdf(getReportPdfUrl(id), `${report.name || 'rapport'}.pdf`)}
+                className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer border-none">
+                <Download size={13} /> PDF
+              </button>
+              <button onClick={() => downloadPdf(getReportExcelUrl(id), `${report.name || 'rapport'}.xlsx`)}
+                className="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer border-none">
+                <Download size={13} /> Excel
+              </button>
+            </>
+          )}
+          {isCEO && report.workflowStatus === 'SUBMITTED' && (
             <>
               <button onClick={() => setShowReviewModal('approve')}
                 className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer">
                 <ThumbsUp size={13} /> Approuver
+              </button>
+              <button onClick={() => setShowReviewModal('modify')}
+                className="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer">
+                <RotateCcw size={13} /> Réviser
               </button>
               <button onClick={() => setShowReviewModal('reject')}
                 className="flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all cursor-pointer">
@@ -148,11 +191,31 @@ export const ReportDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ─── CEO Comment ──────────────────────────────────────────────────── */}
-      {report.comment && (
-        <div className="p-4 bg-white/5 rounded-xl border border-white/10 no-print">
-          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1">Commentaire Direction</p>
-          <p className="text-sm text-white">{report.comment}</p>
+      {/* ─── Workflow status banner ────────────────────────────────────── */}
+      {report.workflowStatus === 'APPROVED' && (
+        <div className="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20 no-print flex items-start gap-3">
+          <Check size={16} className="text-emerald-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Rapport Approuvé</p>
+            {report.comment && <p className="text-sm text-emerald-200">{report.comment}</p>}
+            {report.approvedAt && <p className="text-xs text-muted-foreground mt-1">Le {formatDate(report.approvedAt)}</p>}
+          </div>
+        </div>
+      )}
+      {report.workflowStatus === 'REJECTED' && (
+        <div className="p-4 bg-red-500/10 rounded-xl border border-red-500/20 no-print flex items-start gap-3">
+          <AlertTriangle size={16} className="text-red-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-red-400 uppercase tracking-wider mb-1">Rapport Rejeté</p>
+            {report.comment && <p className="text-sm text-red-200">{report.comment}</p>}
+            {report.rejectedAt && <p className="text-xs text-muted-foreground mt-1">Le {formatDate(report.rejectedAt)}</p>}
+          </div>
+        </div>
+      )}
+      {report.workflowStatus === 'SUBMITTED' && isCEO && (
+        <div className="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20 no-print flex items-start gap-3">
+          <Clock size={16} className="text-amber-400 mt-0.5 shrink-0" />
+          <p className="text-xs text-amber-200">Ce rapport attend votre examen. Utilisez les boutons Approuver / Réviser / Rejeter ci-dessus.</p>
         </div>
       )}
 
@@ -183,11 +246,17 @@ export const ReportDetailPage: React.FC = () => {
             <StatCard label="Bénéfice Net" value={formatCurrency(summary.netProfit)} icon={<Target size={18} />} colorClass="bg-indigo-500/10 text-indigo-400" />
             <StatCard label="Marge Nette" value={`${summary.profitMargin}%`} icon={<BarChart3 size={18} />} colorClass="bg-purple-500/10 text-purple-400" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 no-print mt-4">
             <StatCard label="Factures" value={summary.invoiceCount} icon={<FileText size={18} />} colorClass="bg-blue-500/10 text-blue-400" />
             <StatCard label="Payées" value={summary.paidInvoices} icon={<Check size={18} />} colorClass="bg-emerald-500/10 text-emerald-400" />
             <StatCard label="En Retard" value={summary.overdueInvoices} icon={<AlertTriangle size={18} />} colorClass="bg-red-500/10 text-red-400" />
             <StatCard label="Conv. Devis" value={`${summary.quoteConversionRate}%`} icon={<TrendingUp size={18} />} colorClass="bg-amber-500/10 text-amber-400" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 no-print mt-4">
+            <StatCard label="Ratio Dépenses" value={`${summary.expenseRatio ?? 0}%`} icon={<TrendingUp size={18} />} colorClass="bg-red-500/10 text-red-400" />
+            <StatCard label="Croissance Revenus" value={`${summary.revenueGrowth ?? 0}%`} icon={<TrendingUp size={18} />} colorClass="bg-emerald-500/10 text-emerald-400" />
+            <StatCard label="Facture Moyenne" value={formatCurrency(summary.averageInvoiceValue ?? 0)} icon={<FileText size={18} />} colorClass="bg-blue-500/10 text-blue-400" />
+            <StatCard label="Dépense Moy/Projet" value={formatCurrency(summary.averageExpensePerProject ?? 0)} icon={<Briefcase size={18} />} colorClass="bg-amber-500/10 text-amber-400" />
           </div>
 
           {/* Charts */}
@@ -489,7 +558,6 @@ export const ReportDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* ─── AI INSIGHTS ─────────────────────────────────────────────────── */}
       {ai && (
         <div className="report-print-section report-print-insights">
           <div className="glass-card rounded-2xl p-6 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20">
@@ -572,6 +640,96 @@ export const ReportDetailPage: React.FC = () => {
         </div>
       )}
 
+      {/* ─── Manager Notes (display only) ─────────────────────────────────── */}
+      {report.notes && Object.values(report.notes).some(v => v && String(v).trim()) && (
+        <div className="glass-card rounded-2xl p-6 border border-white/10 no-print">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+            <FileText size={14} className="text-indigo-400" /> Notes du Manager
+          </h3>
+          <div className="space-y-4">
+            {([
+              ['achievements', '🏆 Réalisations'],
+              ['problems', '⚠️ Problèmes'],
+              ['risks', '🔴 Risques'],
+              ['recommendations', '💡 Recommandations'],
+              ['improvementPlan', '📋 Plan d\'amélioration'],
+              ['generalObservations', '🔍 Observations'],
+              ['financialAnalysis', '📊 Analyse Financière'],
+              ['budgetIssues', '💸 Problèmes Budgétaires'],
+              ['plannedActions', '✅ Actions Planifiées'],
+            ] as [string, string][]).map(([key, label]) => {
+              const val = (report.notes as any)?.[key];
+              if (!val || !String(val).trim()) return null;
+              return (
+                <div key={key}>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
+                  <p className="text-sm text-white/80 whitespace-pre-wrap">{String(val)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ─── CEO Comments Thread ──────────────────────────────────────────── */}
+      <div className="glass-card rounded-2xl p-6 border border-white/10 no-print">
+        <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+          <MessageSquare size={14} className="text-indigo-400" />
+          Commentaires de la Direction
+          {report.reportComments?.length ? (
+            <span className="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/30">
+              {report.reportComments.length}
+            </span>
+          ) : null}
+        </h3>
+
+        {/* Comment list */}
+        <div className="space-y-4 mb-6">
+          {report.reportComments?.length === 0 && (
+            <p className="text-xs text-muted-foreground italic">Aucun commentaire pour le moment.</p>
+          )}
+          {report.reportComments?.map(c => (
+            <div key={c.id} className="flex gap-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                {c.author?.firstName?.[0]}{c.author?.lastName?.[0]}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-semibold text-white">{c.author?.firstName} {c.author?.lastName}</span>
+                  <span className="text-[10px] text-muted-foreground">{formatDate(c.createdAt)}</span>
+                </div>
+                <p className="text-sm text-white/80 bg-white/5 rounded-xl px-3 py-2 border border-white/5">{c.content}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add comment input */}
+        {isCEO && (
+          <div className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+              {user?.firstName?.[0]}{user?.lastName?.[0]}
+            </div>
+            <div className="flex-1 flex gap-2">
+              <input
+                value={commentText}
+                onChange={e => setCommentText(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
+                placeholder="Ajouter un commentaire..."
+                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all"
+              />
+              <button
+                onClick={handleAddComment}
+                disabled={!commentText.trim() || submittingComment}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 cursor-pointer transition-all"
+              >
+                <Send size={12} /> Envoyer
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* ─── Print Footer ────────────────────────────────────────────────── */}
       <div className="report-print-footer">
         <span>CREATIVART - Rapport Confidentiel</span>
@@ -583,12 +741,20 @@ export const ReportDetailPage: React.FC = () => {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print">
           <div className="glass-card w-full max-w-md rounded-2xl border border-white/10 p-6 space-y-4">
             <h3 className="text-base font-bold text-white">
-              {showReviewModal === 'approve' ? 'Approuver le Rapport' : 'Rejeter le Rapport'}
+              {showReviewModal === 'approve' ? '✅ Approuver le Rapport'
+                : showReviewModal === 'modify' ? '🔄 Demander des Modifications'
+                : '❌ Rejeter le Rapport'}
             </h3>
+            <p className="text-xs text-muted-foreground">
+              {showReviewModal === 'approve'
+                ? 'Ajoutez un commentaire de validation (optionnel).'
+                : showReviewModal === 'modify'
+                ? 'Précisez les modifications demandées.'
+                : 'Expliquez les raisons du rejet.'}
+            </p>
             <textarea
               rows={4}
-              required
-              placeholder={showReviewModal === 'approve' ? 'Commentaire de validation...' : 'Motif de rejet...'}
+              placeholder={showReviewModal === 'approve' ? 'Commentaire de validation (optionnel)...' : showReviewModal === 'modify' ? 'Modifications demandées...' : 'Motif de rejet *'}
               value={reviewComment}
               onChange={e => setReviewComment(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all resize-none"
@@ -599,9 +765,11 @@ export const ReportDetailPage: React.FC = () => {
               </button>
               <button
                 onClick={() => handleReview(showReviewModal)}
-                disabled={approveMutation.isPending || rejectMutation.isPending}
-                className={`flex-1 text-white text-xs font-semibold py-2 rounded-xl transition-all cursor-pointer ${
-                  showReviewModal === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'
+                disabled={approveMutation.isPending || rejectMutation.isPending || requestModMutation.isPending || (showReviewModal !== 'approve' && !reviewComment.trim())}
+                className={`flex-1 text-white text-xs font-semibold py-2 rounded-xl transition-all cursor-pointer disabled:opacity-50 ${
+                  showReviewModal === 'approve' ? 'bg-emerald-600 hover:bg-emerald-700'
+                  : showReviewModal === 'modify' ? 'bg-amber-600 hover:bg-amber-700'
+                  : 'bg-red-600 hover:bg-red-700'
                 }`}
               >
                 Confirmer

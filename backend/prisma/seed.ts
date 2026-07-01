@@ -144,7 +144,7 @@ async function main() {
       'tasks:read', 'tasks:write',
       'documents:read', 'documents:create',
       'calendar:read', 'calendar:write',
-      'reports:read',
+      'reports:read', 'reports:write',
     ],
     RESPONSABLE_FINANCIER: [
       'users:read',

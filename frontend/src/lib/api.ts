@@ -22,29 +22,30 @@ const processQueue = (error: any, token: string | null = null) => {
   });
   failedQueue = [];
 };
-
-// Request Interceptor: Attach bearer tokens
+// Request Interceptor: Attach bearer tokens and log payload
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('accessToken');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log(`[Axios Request] ${config.method?.toUpperCase()} ${config.url}`, config.data);
     return config;
   },
   (error) => {
+    console.error('[Axios Request Error]', error);
     return Promise.reject(error);
   }
 );
 
-// Response Interceptor: Handle 401 Unauthorized errors (Silent Refresh)
+// Response Interceptor: Handle 401 Unauthorized errors (Silent Refresh) and log response/errors
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error: AxiosError) => {
+    console.error(`[Axios Response Error] ${error.config?.method?.toUpperCase()} ${error.config?.url} - Status ${error.response?.status}`, error.response?.data || error.message);
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-    
     // Check if error is 401 and not already retried
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       if (originalRequest.url === '/auth/refresh' || originalRequest.url === '/auth/login') {

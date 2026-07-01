@@ -114,16 +114,6 @@ export class ReportInsightService {
       }
     }
 
-    if (insights.length > 0) {
-      await this.prisma.reportInsight.createMany({
-        data: insights.map(i => ({
-          reportId,
-          insightText: i.insightText,
-          severity: i.severity,
-        })),
-      });
-    }
-
     return insights;
   }
 }

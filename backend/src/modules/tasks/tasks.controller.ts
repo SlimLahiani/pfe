@@ -41,6 +41,7 @@ export class TasksController {
   @Post()
   @RequirePermissions('tasks:write')
   create(@Body() createTaskDto: CreateTaskDto, @CurrentUser() user: any) {
+    console.log(`[TasksController] Creating task for user ${user.id} with DTO:`, JSON.stringify(createTaskDto));
     return this.tasksService.create(createTaskDto, user.id, user);
   }
 

@@ -1087,6 +1087,36 @@ export const useExecutiveSummary = () =>
 
 // ─── Reports ──────────────────────────────────────────────────────────────────
 
+export interface ReportComment {
+  id: string;
+  reportId: string;
+  authorId: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  author?: { id: string; firstName: string; lastName: string; avatarUrl?: string };
+}
+
+export interface ReportHistoryEntry {
+  id: string;
+  reportId: string;
+  action: string;
+  performedById: string;
+  details: any;
+  createdAt: string;
+  performedBy?: { id: string; firstName: string; lastName: string };
+}
+
+export interface ReportApproval {
+  id: string;
+  reportId: string;
+  reviewerId: string;
+  action: string;
+  comment?: string;
+  createdAt: string;
+  reviewer?: { id: string; firstName: string; lastName: string };
+}
+
 export interface ReportSchedule {
   id: string;
   reportId: string;
@@ -1113,9 +1143,33 @@ export interface Report {
   departmentId?: string;
   managerId?: string;
   reportingPeriod?: string;
+  // Legacy status (kept for backward compat)
   status: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED';
+  // New workflow status
+  workflowStatus: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
+  notes?: {
+    // HR notes
+    achievements?: string;
+    problems?: string;
+    risks?: string;
+    recommendations?: string;
+    improvementPlan?: string;
+    generalObservations?: string;
+    // Finance notes
+    financialAnalysis?: string;
+    budgetIssues?: string;
+    plannedActions?: string;
+  };
+  submittedAt?: string;
+  approvedAt?: string;
+  approvedById?: string;
+  rejectedAt?: string;
+  rejectedById?: string;
   version: number;
   comment?: string;
+  title?: string;
+  periodStart?: string;
+  periodEnd?: string;
   data?: any;
   aiInsights?: {
     keyFindings: string[];
@@ -1126,7 +1180,10 @@ export interface Report {
     priorityLevel: 'HIGH' | 'MEDIUM' | 'LOW';
   };
   schedules?: ReportSchedule[];
-  createdBy?: { id: string; firstName: string; lastName: string };
+  reportComments?: ReportComment[];
+  reportHistory?: ReportHistoryEntry[];
+  reportApprovals?: ReportApproval[];
+  createdBy?: { id: string; firstName: string; lastName: string; avatarUrl?: string };
   department?: { id: string; name: string };
   manager?: { id: string; firstName: string; lastName: string };
 }
@@ -1147,6 +1204,17 @@ const REPORTS_KEY = ['reports'];
 
 export const useReports = (params?: QueryParams) => useList<Report>(REPORTS_KEY, '/reports', params);
 export const useReport = (id?: string) => useOne<Report>(REPORTS_KEY, '/reports', id);
+
+export const useReportData = (id?: string) => {
+  return useQuery({
+    queryKey: [REPORTS_KEY, id, 'data'],
+    queryFn: async () => {
+      const res = await api.get(`/reports/${id}/data`);
+      return res.data;
+    },
+    enabled: !!id,
+  });
+};
 export const useCreateReport = () => useCreate<Report, any>(REPORTS_KEY, '/reports');
 export const useUpdateReport = () => useUpdate<Report, any>(REPORTS_KEY, '/reports');
 export const useDeleteReport = () => useRemove(REPORTS_KEY, '/reports');
@@ -1166,6 +1234,20 @@ export const useRunReport = () => {
   });
 };
 
+export const useSubmitReport = () => {
+  const qc = useQueryClient();
+  return useMutation<Report, Error, string>({
+    mutationFn: async (id: string) => {
+      const res = await api.post<Report>(`/reports/${id}/submit`);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['reports'] });
+      qc.invalidateQueries({ queryKey: ['reports', data.id] });
+    },
+  });
+};
+
 export const useApproveReport = () => {
   const qc = useQueryClient();
   return useMutation<Report, Error, { id: string; comment?: string }>({
@@ -1176,6 +1258,7 @@ export const useApproveReport = () => {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['reports'] });
       qc.invalidateQueries({ queryKey: ['reports', data.id] });
+      qc.invalidateQueries({ queryKey: ['reports', data.id, 'data'] });
     },
   });
 };
@@ -1190,9 +1273,75 @@ export const useRejectReport = () => {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['reports'] });
       qc.invalidateQueries({ queryKey: ['reports', data.id] });
+      qc.invalidateQueries({ queryKey: ['reports', data.id, 'data'] });
     },
   });
 };
+
+export const useRequestModifications = () => {
+  const qc = useQueryClient();
+  return useMutation<Report, Error, { id: string; comment: string }>({
+    mutationFn: async ({ id, comment }) => {
+      const res = await api.patch<Report>(`/reports/${id}/request-modifications`, { comment });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['reports'] });
+      qc.invalidateQueries({ queryKey: ['reports', data.id] });
+      qc.invalidateQueries({ queryKey: ['reports', data.id, 'data'] });
+    },
+  });
+};
+
+export const useAddReportComment = () => {
+  const qc = useQueryClient();
+  return useMutation<ReportComment, Error, { reportId: string; content: string }>({
+    mutationFn: async ({ reportId, content }) => {
+      const res = await api.post<ReportComment>(`/reports/${reportId}/comments`, { content });
+      return res.data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['reports', vars.reportId, 'comments'] });
+      qc.invalidateQueries({ queryKey: ['reports', vars.reportId] });
+    },
+  });
+};
+
+export const useReportComments = (reportId?: string) =>
+  useQuery<ReportComment[]>({
+    queryKey: ['reports', reportId, 'comments'],
+    queryFn: async () => {
+      const res = await api.get<ReportComment[]>(`/reports/${reportId}/comments`);
+      return res.data;
+    },
+    enabled: !!reportId,
+  });
+
+export const useReportHistory = (reportId?: string) =>
+  useQuery<ReportHistoryEntry[]>({
+    queryKey: ['reports', reportId, 'history'],
+    queryFn: async () => {
+      const res = await api.get<ReportHistoryEntry[]>(`/reports/${reportId}/history`);
+      return res.data;
+    },
+    enabled: !!reportId,
+  });
+
+export const useGenerateHrReport = () =>
+  useMutation<any, Error, { periodStart?: string; periodEnd?: string; departmentId?: string }>({
+    mutationFn: async (data) => {
+      const res = await api.post('/reports/generate/hr', data);
+      return res.data;
+    },
+  });
+
+export const useGenerateFinanceReport = () =>
+  useMutation<any, Error, { periodStart?: string; periodEnd?: string }>({
+    mutationFn: async (data) => {
+      const res = await api.post('/reports/generate/finance', data);
+      return res.data;
+    },
+  });
 
 export const useComparisonAnalytics = (options?: { enabled?: boolean }) =>
   useQuery<ComparisonAnalyticsItem[]>({
@@ -1217,3 +1366,7 @@ export const useCreateReportSchedule = (reportId: string) => {
     },
   });
 };
+
+// Export URL helpers
+export const getReportPdfUrl = (id: string) => `/reports/export/pdf/${id}`;
+export const getReportExcelUrl = (id: string) => `/reports/export/excel/${id}`;

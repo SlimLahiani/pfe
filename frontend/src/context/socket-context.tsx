@@ -67,23 +67,23 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const authPayload = { token: `Bearer ${token}` };
 
-    // ── Default namespace: Notifications ─────────────────────────────────────
-    const notifySocket = manager.socket('/', { auth: authPayload });
+    // ── Notifications namespace ──────────────────────────────────────────────
+    const notifySocket = manager.socket('/notifications', { auth: authPayload });
     setSocket(notifySocket);
 
     notifySocket.on('connect', () => {
       setIsConnected(true);
-      console.log(`[Socket] ✅ Notifications (/) connected | id=${notifySocket.id}`);
+      console.log(`[Socket] ✅ Notifications (/notifications) connected | id=${notifySocket.id}`);
     });
 
     notifySocket.on('disconnect', (reason) => {
       setIsConnected(false);
-      console.log(`[Socket] 🔌 Notifications (/) disconnected | reason=${reason}`);
+      console.log(`[Socket] 🔌 Notifications (/notifications) disconnected | reason=${reason}`);
     });
 
     notifySocket.on('connect_error', (err) => {
       setIsConnected(false);
-      console.error(`[Socket] ❌ Notifications (/) connection error: ${err.message}`);
+      console.error(`[Socket] ❌ Notifications (/notifications) connection error: ${err.message}`);
     });
 
     notifySocket.on('authenticated', (data: { message: string }) => {

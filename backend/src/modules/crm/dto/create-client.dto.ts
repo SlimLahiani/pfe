@@ -40,4 +40,20 @@ export class CreateClientDto {
   @IsString()
   @IsOptional()
   leadId?: string;
+
+  @IsString()
+  @IsOptional()
+  email?: string;
+
+  @IsString()
+  @IsOptional()
+  phone?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
+
+  @IsString()
+  @IsOptional()
+  company?: string;
 }

@@ -41,6 +41,9 @@ import { CalendarPage } from './features/calendar/pages/calendar-page';
 // Reports
 import { ReportsPage } from './features/reports/pages/reports-page';
 import { ReportDetailPage } from './features/reports/pages/report-detail-page';
+import { HrReportFormPage } from './features/reports/pages/hr-report-form-page';
+import { FinanceReportFormPage } from './features/reports/pages/finance-report-form-page';
+import { ReportEditPage } from './features/reports/pages/report-edit-page';
 
 // Chat
 import { ChatPage } from './features/chat/pages/chat-page';
@@ -262,6 +265,30 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredPermission="reports:read" allowedRoles={['GERANT', 'RESPONSABLE_RH', 'RESPONSABLE_FINANCIER', 'RESPONSABLE_MARKETING', 'RESPONSABLE_VENTES', 'CHEF_PROJET', 'CHEF_EQUIPE', 'RESPONSABLE_OPERATIONS']}>
             <ReportsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/reports/new/hr',
+        element: (
+          <ProtectedRoute requiredPermission="reports:write" allowedRoles={['RESPONSABLE_RH', 'GERANT']}>
+            <HrReportFormPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/reports/new/finance',
+        element: (
+          <ProtectedRoute requiredPermission="reports:write" allowedRoles={['RESPONSABLE_FINANCIER', 'GERANT']}>
+            <FinanceReportFormPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/reports/:id/edit',
+        element: (
+          <ProtectedRoute requiredPermission="reports:write" allowedRoles={['RESPONSABLE_RH', 'RESPONSABLE_FINANCIER', 'GERANT']}>
+            <ReportEditPage />
           </ProtectedRoute>
         ),
       },

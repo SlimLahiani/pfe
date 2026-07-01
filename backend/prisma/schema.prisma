@@ -53,6 +53,9 @@ model User {
   callParticipants         CallParticipant[]
   meetingParticipants      MeetingParticipant[]
   meetingNotes             MeetingNote[]
+  reportComments           ReportComment[]           @relation("ReportCommentAuthor")
+  reportHistory            ReportHistory[]           @relation("ReportHistoryUser")
+  reportApprovals          ReportApproval[]          @relation("ReportApprovalReviewer")
 
   @@index([email])
   @@index([roleId])
@@ -807,67 +810,97 @@ model EventAttendee {
 }
 
 model Report {
-  id              String           @id @default(uuid())
-  name            String
-  type            ReportType
-  subType         String?
-  filters         Json             @default("{}")
-  createdById     String
-  isShared        Boolean          @default(false)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  deletedAt       DateTime?
-  isArchived      Boolean          @default(false)
-  departmentId    String?
-  managerId       String?
-  reportingPeriod String?
-  status          String           @default("PENDING_REVIEW")
-  version         Int              @default(1)
-  comment         String?
-  data            Json?
-  aiInsights      Json?
-  
-  reportNumber    String?          @unique
-  title           String?
-  periodStart     DateTime?
-  periodEnd       DateTime?
-  summary         String?
-  jsonData        Json?
-  pdfUrl          String?
+  id               String           @id @default(uuid())
+  name             String
+  type             ReportType
+  subType          String?
+  filters          Json             @default("{}")
+  data             Json?
+  charts           Json?
+  createdById      String
+  isShared         Boolean          @default(false)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  deletedAt        DateTime?
+  isArchived       Boolean          @default(false)
+  departmentId     String?
+  managerId        String?
+  reportingPeriod  String?
+  status           String           @default("PENDING_REVIEW")
+  version          Int              @default(1)
+  comment          String?
+  reportNumber     String?          @unique
+  title            String?
+  periodStart      DateTime?
+  periodEnd        DateTime?
+  pdfUrl           String?
 
-  metrics         ReportMetric[]
-  insights        ReportInsight[]
+  // Workflow fields
+  workflowStatus   String           @default("DRAFT")
+  notes            Json?            // Manager notes (observations, risks, recommendations...)
+  submittedAt      DateTime?
+  approvedAt       DateTime?
+  approvedById     String?
+  rejectedAt       DateTime?
+  rejectedById     String?
+
   schedules       ReportSchedule[]
+  reportComments  ReportComment[]
+  reportHistory   ReportHistory[]
+  reportApprovals ReportApproval[]
   createdBy       User             @relation(fields: [createdById], references: [id])
   department      Department?      @relation(fields: [departmentId], references: [id])
   manager         User?            @relation("ReportManager", fields: [managerId], references: [id])
 
   @@index([type])
   @@index([createdById])
+  @@index([workflowStatus])
   @@map("reports")
 }
 
-model ReportMetric {
-  id          String   @id @default(uuid())
-  reportId    String
-  metricName  String
-  metricValue Float
-  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+model ReportComment {
+  id        String   @id @default(uuid())
+  reportId  String
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  author    User     @relation("ReportCommentAuthor", fields: [authorId], references: [id])
 
   @@index([reportId])
-  @@map("report_metrics")
+  @@index([authorId])
+  @@map("report_comments")
 }
 
-model ReportInsight {
+model ReportHistory {
   id          String   @id @default(uuid())
   reportId    String
-  insightText String
-  severity    String
+  action      String   // CREATED, SAVED_DRAFT, SUBMITTED, APPROVED, REJECTED, MODIFICATION_REQUESTED, COMMENTED
+  performedById String
+  details     Json     @default("{}")
+  createdAt   DateTime @default(now())
   report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  performedBy User     @relation("ReportHistoryUser", fields: [performedById], references: [id])
 
   @@index([reportId])
-  @@map("report_insights")
+  @@map("report_history")
 }
+
+model ReportApproval {
+  id          String   @id @default(uuid())
+  reportId    String
+  reviewerId  String
+  action      String   // APPROVED, REJECTED, MODIFICATION_REQUESTED
+  comment     String?
+  createdAt   DateTime @default(now())
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  reviewer    User     @relation("ReportApprovalReviewer", fields: [reviewerId], references: [id])
+
+  @@index([reportId])
+  @@map("report_approvals")
+}
+
 
 model ReportSchedule {
   id         String    @id @default(uuid())
@@ -1236,6 +1269,10 @@ enum NotificationType {
   MENTION
   SYSTEM
   NEW_MESSAGE
+  REPORT_SUBMITTED
+  REPORT_APPROVED
+  REPORT_REJECTED
+  REPORT_MODIFICATION_REQUESTED
 }
 
 enum EventType {

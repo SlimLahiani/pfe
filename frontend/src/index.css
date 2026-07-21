@@ -205,3 +205,32 @@ select option {
 .animate-particle-2 {
   animation: drift-particle-2 32s infinite ease-in-out;
 }
+
+/* Premium input focus underline expand animation */
+.input-underline {
+  position: relative;
+}
+.input-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: hsl(var(--primary));
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateX(-50%);
+}
+.input-underline:focus-within::after {
+  width: 100%;
+}
+
+/* Floating card effects */
+@keyframes card-float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+.animate-card-float {
+  animation: card-float 6s infinite ease-in-out;
+}

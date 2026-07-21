@@ -6,7 +6,7 @@ import * as z from 'zod';
 import { useAuth } from '../../../context/auth-context';
 import { 
   Lock, Mail, AlertCircle, ArrowRight, ShieldAlert, Sparkles, 
-  Eye, EyeOff, Briefcase, Users, Wallet, PenTool, Code 
+  Eye, EyeOff, Briefcase, Users, Wallet, PenTool, Code, CheckCircle, Flame, Clock 
 } from 'lucide-react';
 import { Logo } from '../../../components/shared/logo';
 
@@ -65,7 +65,7 @@ export const LoginPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex overflow-hidden bg-[#fafafc]">
+    <div className="min-h-screen w-full flex overflow-hidden bg-[#fafafc] select-none">
       
       {/* LEFT SIDE: Brand Showcase (Visible only on lg screens) */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 bg-primary text-white relative overflow-hidden">
@@ -80,7 +80,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Top Branding Logo */}
         <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
-          <div className="bg-white/95 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-2xl shadow-lg inline-flex items-center gap-2 border border-white/10">
+          <div className="bg-white/95 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-2xl shadow-lg inline-flex items-center gap-2 border border-white/10 hover:scale-105 transition-all duration-300">
             <Logo iconSize="sm" />
             <span className="font-extrabold text-foreground tracking-tight text-sm uppercase">AgencyOS</span>
           </div>
@@ -96,35 +96,58 @@ export const LoginPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Bottom Feature highlights */}
-        <div className="z-10 max-w-md animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-          <div className="space-y-3.5">
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-2xl backdrop-blur-md">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
-                <Sparkles size={16} />
-              </div>
-              <div>
-                <h4 className="font-bold text-xs">Messagerie & Appels en Temps Réel</h4>
-                <p className="text-[10px] text-indigo-200 mt-0.5">Discutez, partagez vos écrans et activez votre caméra.</p>
-              </div>
+        {/* Bottom Feature highlights with staggered floating animations */}
+        <div className="z-10 max-w-md space-y-3.5 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+          <div className="flex items-center gap-3 bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-card-float" style={{ animationDelay: '0s' }}>
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
+              <Sparkles size={16} />
             </div>
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-2xl backdrop-blur-md">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
-                <Users size={16} />
-              </div>
-              <div>
-                <h4 className="font-bold text-xs">Tableau Kanban Interactif</h4>
-                <p className="text-[10px] text-indigo-200 mt-0.5">Glissez-déposez vos tâches pour modifier instantanément leur statut.</p>
-              </div>
+            <div>
+              <h4 className="font-bold text-xs">Messagerie & Appels en Temps Réel</h4>
+              <p className="text-[10px] text-indigo-200 mt-0.5">Discutez, partagez vos écrans et activez votre caméra instantanément.</p>
             </div>
-            <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-2xl backdrop-blur-md">
-              <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
-                <Wallet size={16} />
-              </div>
-              <div>
-                <h4 className="font-bold text-xs">Finance & Facturation Pro</h4>
-                <p className="text-[10px] text-indigo-200 mt-0.5">Émettez des factures avec logo et générez des rapports PDF.</p>
-              </div>
+          </div>
+          <div className="flex items-center gap-3 bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-card-float" style={{ animationDelay: '1.5s' }}>
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
+              <Users size={16} />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs">Tableau Kanban Interactif</h4>
+              <p className="text-[10px] text-indigo-200 mt-0.5">Glissez-déposez vos tâches pour modifier instantanément leur statut.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-card-float" style={{ animationDelay: '3s' }}>
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
+              <Wallet size={16} />
+            </div>
+            <div>
+              <h4 className="font-bold text-xs">Finance & Facturation Pro</h4>
+              <p className="text-[10px] text-indigo-200 mt-0.5">Émettez des factures avec logo et générez des rapports PDF.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stat Counter Strip */}
+        <div className="z-10 border-t border-white/10 pt-6 mt-6 flex justify-between items-center text-white animate-fade-in-up" style={{ animationDelay: '500ms' }}>
+          <div className="flex items-center gap-2">
+            <CheckCircle size={14} className="text-emerald-400 animate-pulse" />
+            <div className="text-left">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Uptime Réseau</p>
+              <p className="text-xs font-extrabold">99.9% Stable</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Flame size={14} className="text-orange-400 animate-pulse" />
+            <div className="text-left">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Activités</p>
+              <p className="text-xs font-extrabold">10k+ Tâches</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock size={14} className="text-sky-400 animate-pulse" />
+            <div className="text-left">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Communication</p>
+              <p className="text-xs font-extrabold">En direct</p>
             </div>
           </div>
         </div>
@@ -132,7 +155,7 @@ export const LoginPage: React.FC = () => {
 
       {/* RIGHT SIDE: Interactive Login Form Container */}
       <div className="flex-1 flex items-center justify-center p-8 bg-[#fafafc] relative overflow-hidden">
-        {/* Dynamic mesh backgrounds for mobile (hidden on lg) */}
+        {/* Dynamic mesh backgrounds for mobile */}
         <div className="lg:hidden absolute top-[-10%] left-[-10%] w-[350px] h-[350px] bg-primary/10 rounded-full blur-[100px] animate-blob-1 pointer-events-none" />
         <div className="lg:hidden absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-400/8 rounded-full blur-[110px] animate-blob-2 pointer-events-none" />
 
@@ -145,7 +168,7 @@ export const LoginPage: React.FC = () => {
 
         <div className="w-full max-w-md z-10">
           
-          {/* Logo & Headline for mobile screens (hidden on desktop lg) */}
+          {/* Mobile Branding (hidden on desktop lg) */}
           <div className="lg:hidden text-center mb-8 flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-black/[0.05] text-primary text-xs font-semibold mb-6 shadow-sm">
               <Sparkles size={12} className="animate-spin text-primary mr-1" style={{ animationDuration: '4s' }} />
@@ -157,7 +180,7 @@ export const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Form Card wrapper */}
+          {/* Form Card wrapper with moving glow on hover */}
           <div 
             className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-black/[0.06] shadow-[0_0_50px_rgba(99,102,241,0.03)] hover:shadow-[0_0_60px_rgba(99,102,241,0.12)] hover:border-primary/25 transition-all duration-500 animate-fade-in-up"
             style={{ animationDelay: '300ms' }}
@@ -175,12 +198,12 @@ export const LoginPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Email Input */}
+              {/* Email Input with underline glow on focus */}
               <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '350ms' }}>
                 <label className="text-xs font-bold text-foreground/80 tracking-wide">
                   Adresse Email
                 </label>
-                <div className="relative group">
+                <div className="relative group input-underline">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary group-focus-within:scale-105 transition-all duration-300">
                     <Mail size={16} />
                   </div>
@@ -199,14 +222,14 @@ export const LoginPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Password Input */}
+              {/* Password Input with underline glow on focus */}
               <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '420ms' }}>
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-bold text-foreground/80 tracking-wide">
                     Mot de passe
                   </label>
                 </div>
-                <div className="relative group">
+                <div className="relative group input-underline">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary group-focus-within:scale-105 transition-all duration-300">
                     <Lock size={16} />
                   </div>
@@ -253,7 +276,7 @@ export const LoginPage: React.FC = () => {
               </div>
             </form>
 
-            {/* Test accounts trigger */}
+            {/* Demo Accounts tab trigger */}
             <div 
               className="mt-8 pt-6 border-t border-black/[0.06] flex flex-col items-center animate-fade-in-up"
               style={{ animationDelay: '560ms' }}

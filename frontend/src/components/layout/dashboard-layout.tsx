@@ -430,18 +430,21 @@ export const DashboardLayout: React.FC = () => {
                 to={item.path!}
                 onClick={() => setIsSidebarOpen(false)}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative group overflow-hidden',
                   isActive
-                    ? 'bg-primary/10 text-primary border border-primary/10 shadow-sm'
+                    ? 'bg-primary/10 text-primary border border-primary/10 shadow-[0_0_20px_rgba(99,102,241,0.08)]'
                     : 'text-muted-foreground hover:text-foreground hover:bg-black/5',
                   isChatItem && 'mt-1'
                 )}
               >
-                <span className={isActive ? 'text-primary' : 'text-gray-500 group-hover:text-gray-300'}>
+                <span className={cn('transition-all duration-300', isActive ? 'text-primary scale-105' : 'text-gray-500 group-hover:text-gray-300')}>
                   {item.icon}
                 </span>
                 {item.label}
-                {isChatItem && isConnected && (
+                {isActive && (
+                  <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.8)]" />
+                )}
+                {isChatItem && isConnected && !isActive && (
                   <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                 )}
               </Link>
@@ -530,7 +533,7 @@ export const DashboardLayout: React.FC = () => {
             <Outlet />
           </main>
         ) : (
-          <main className="flex-1 p-6 overflow-y-auto animate-fade-in">
+          <main className="flex-1 p-6 overflow-y-auto animate-fade-in-up">
             <div className="max-w-7xl mx-auto w-full">
               <Outlet />
             </div>

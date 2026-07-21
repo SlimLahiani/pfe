@@ -105,7 +105,7 @@ export const LoginPage: React.FC = () => {
         <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
           <div className="flex items-center gap-3">
             <div className="bg-white/10 p-2.5 rounded-2xl border border-white/10 backdrop-blur-md shadow-sm">
-              <Logo iconSize="sm" />
+              <Logo iconSize="sm" className="brightness-0 invert" />
             </div>
             <span className="font-black text-xl tracking-tight uppercase text-white">CreativArt</span>
           </div>

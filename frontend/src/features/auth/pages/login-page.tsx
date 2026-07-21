@@ -68,7 +68,7 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen w-full flex overflow-hidden bg-white select-none">
       
       {/* LEFT SIDE: Brand Showcase (Inspired by user uploaded vector layout) */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16 bg-gradient-to-br from-[#805ad5] via-[#7c3aed] to-[#5b21b6] text-white relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16 bg-gradient-to-br from-[#1e1b4b] via-[#312e81] to-primary text-white relative overflow-hidden">
         
         {/* Topographic Wave Lines (Vector SVGs at corners) */}
         <div className="absolute top-0 left-0 w-64 h-64 opacity-25 pointer-events-none">
@@ -232,10 +232,10 @@ export const LoginPage: React.FC = () => {
               {/* Remember Me and Forgot Password row */}
               <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground px-1.5 animate-fade-in-up" style={{ animationDelay: '460ms' }}>
                 <label className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors">
-                  <input type="checkbox" className="rounded border-black/10 text-[#7c3aed] focus:ring-[#7c3aed]" />
+                  <input type="checkbox" className="rounded border-black/10 text-primary focus:ring-primary" />
                   <span>Remember me</span>
                 </label>
-                <a href="#forgot" className="text-muted-foreground hover:text-[#7c3aed] transition-colors">Forgot password?</a>
+                <a href="#forgot" className="text-muted-foreground hover:text-primary transition-colors">Forgot password?</a>
               </div>
 
               {/* Sign In Button - Pill Rounded Gradient */}
@@ -243,7 +243,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full relative overflow-hidden bg-gradient-to-r from-[#805ad5] to-[#7c3aed] text-white font-bold py-3.5 rounded-full flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:brightness-105 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none text-sm group"
+                  className="w-full relative overflow-hidden bg-gradient-to-r from-[#312e81] to-primary text-white font-bold py-3.5 rounded-full flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/35 hover:brightness-105 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none text-sm group"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -266,7 +266,7 @@ export const LoginPage: React.FC = () => {
             >
               <button
                 onClick={() => setShowSeedAccounts(!showSeedAccounts)}
-                className="text-xs text-primary/80 hover:text-[#7c3aed] font-bold flex items-center gap-2 transition-colors focus:outline-none hover:scale-105 transform duration-300"
+                className="text-xs text-primary/80 hover:text-primary font-bold flex items-center gap-2 transition-colors focus:outline-none hover:scale-105 transform duration-300"
               >
                 <ShieldAlert size={14} className="text-primary/70" />
                 Identifiants de démonstration ? Afficher

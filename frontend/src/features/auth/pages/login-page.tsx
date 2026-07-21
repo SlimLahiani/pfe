@@ -183,13 +183,13 @@ export const LoginPage: React.FC = () => {
               {/* Email Input - Pill Rounded */}
               <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                 <div className="relative group input-underline">
-                  <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors">
+                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
                     <Mail size={16} />
                   </div>
                   <input
                     type="email"
                     placeholder="Username or email"
-                    className="w-full pl-11 pr-4 py-3.5 rounded-full border border-black/10 focus:ring-4 focus:ring-primary/5 focus:border-[#7c3aed] outline-none text-sm transition-all duration-300 bg-white hover:border-black/20"
+                    className="w-full pl-11 pr-4 py-3.5 rounded-full border border-black/10 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none text-sm transition-all duration-300 bg-white hover:border-black/20"
                     {...register('email')}
                     disabled={isLoading}
                   />
@@ -204,20 +204,20 @@ export const LoginPage: React.FC = () => {
               {/* Password Input - Pill Rounded */}
               <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '380ms' }}>
                 <div className="relative group input-underline">
-                  <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors">
+                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
                     <Lock size={16} />
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Password"
-                    className="w-full pl-11 pr-11 py-3.5 rounded-full border border-black/10 focus:ring-4 focus:ring-primary/5 focus:border-[#7c3aed] outline-none text-sm transition-all duration-300 bg-white hover:border-black/20"
+                    className="w-full pl-11 pr-11 py-3.5 rounded-full border border-black/10 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none text-sm transition-all duration-300 bg-white hover:border-black/20"
                     {...register('password')}
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4.5 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute inset-y-0 right-4 flex items-center text-muted-foreground hover:text-primary transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>

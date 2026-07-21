@@ -1,21 +1,31 @@
-# Documentation Technique - AgencyOS
+# Documentation Technique Complète - AgencyOS
 
-Bienvenue dans la documentation complète de **AgencyOS**, une plateforme ERP et collaborative moderne conçue pour rationaliser la gestion des opérations, des ressources humaines, de la facturation et de la communication en temps réel au sein de l'entreprise.
-
----
-
-## 1. Vue d'Ensemble du Projet
-
-AgencyOS s'articule autour d'une architecture client-serveur robuste avec un découpage clair :
-- **Backend** : Construit avec **NestJS** (TypeScript), exploitant **Prisma ORM** pour communiquer avec une base de données relationnelle **PostgreSQL**. La communication bidirectionnelle en temps réel est gérée via **Socket.IO**.
-- **Frontend** : Construit avec **React** (TypeScript) et **Vite**, stylisé avec **Tailwind CSS** et un système de thèmes personnalisé (supportant le Light Mode premium).
-- **Communication en temps réel (Appels)** : Intégration de **WebRTC** de pair à pair pour les appels audio/vidéo avec signalisation WebSocket.
+Bienvenue dans la documentation de **AgencyOS**, une plateforme ERP et collaborative moderne de niveau entreprise conçue pour centraliser et automatiser les processus opérationnels, la relation client (CRM), les ressources humaines (RH), la finance et la communication en temps réel.
 
 ---
 
-## 2. Diagramme de Cas d'Utilisation Global (Use Case Diagram)
+## 1. Architecture Système et Technologies
 
-Ce diagramme exhaustif décrit les droits et interactions de chaque rôle (Gérant, RH, Comptable, Secrétaire, Chef de Projet, Collaborateur, Stagiaire) avec les différentes pages et fonctionnalités du système.
+AgencyOS repose sur une stack technologique robuste et performante :
+
+### Backend (NestJS + Prisma + PostgreSQL)
+- **Framework** : NestJS (TypeScript), structuré en modules découplés (utilisant l'injection de dépendances).
+- **Accès aux Données** : Prisma ORM, garantissant une communication typée avec une base de données PostgreSQL.
+- **Temps Réel** : Socket.IO (WebSockets) intégré via des Gateways NestJS pour les notifications, la messagerie et la signalisation WebRTC.
+- **Sécurité** : Guard JWT, chiffrement des mots de passe avec bcrypt, et contrôle d'accès basé sur les rôles et permissions (RBAC).
+
+### Frontend (React + Vite + Tailwind CSS)
+- **Framework** : React avec TypeScript et Vite pour un build ultra-rapide.
+- **Thème & Design** : Tailwind CSS avec un système de variables CSS personnalisées pour le Light Mode et le Dark Mode premium.
+- **Gestion d'État & Requêtes** : TanStack Query (React Query) pour le cache et la synchronisation avec le serveur.
+- **WebRTC** : Hook personnalisé `useWebRTC` gérant la capture de flux média, le peer-to-peer et l'échange de candidats ICE.
+
+---
+
+## 2. Diagrammes de Modélisation UML
+
+### A. Diagramme de Cas d'Utilisation Global (Use Case Diagram)
+Ce diagramme détaille les permissions et les cas d'utilisation pour tous les rôles de l'entreprise (Gérant, RH, Comptable, Secrétaire, Chef de Projet, Collaborateur, Stagiaire) :
 
 ```mermaid
 leftToRightDirection
@@ -76,9 +86,8 @@ Stagiaire --> UC_Chat
 
 ---
 
-## 3. Diagramme de Classes Détaillé (Class Diagram)
-
-Ce diagramme représente la structure complète de la base de données relationnelle et la modélisation des entités sous Prisma.
+### B. Diagramme de Classes Complet (Class Diagram)
+Ce diagramme montre la modélisation des entités sous Prisma et leurs relations :
 
 ```mermaid
 classDiagram
@@ -191,9 +200,8 @@ classDiagram
 
 ---
 
-## 4. Diagramme de Séquence : Workflow d'Approbation de Congé
-
-Ce diagramme montre comment une demande de congé soumise par un Collaborateur transite par le backend pour être validée par le Responsable RH.
+### C. Diagramme de Séquence : Approbation de Congé (Workflow RH)
+Flux de demande de congé par un employé et sa validation par le RH :
 
 ```mermaid
 sequenceDiagram
@@ -219,9 +227,8 @@ sequenceDiagram
 
 ---
 
-## 5. Diagramme de Séquence : cycle de vie d'une Tâche (Kanban Drag & Drop)
-
-Ce diagramme montre la création d'une tâche par le Chef de Projet et sa mise à jour dynamique par glisser-déposer (Drag & Drop) par le Collaborateur.
+### D. Diagramme de Séquence : Cycle de Vie d'une Tâche (Kanban Drag & Drop)
+Création d'une tâche et mise à jour dynamique par glisser-déposer :
 
 ```mermaid
 sequenceDiagram
@@ -245,9 +252,8 @@ sequenceDiagram
 
 ---
 
-## 6. Diagramme de Séquence : Signalisation d'Appel WebRTC
-
-Le diagramme ci-dessous illustre le protocole complet d'établissement d'un appel audio/vidéo avec Messenger-level Camera Toggle (activation/désactivation dynamique de la caméra en temps réel sans coupure de flux).
+### E. Diagramme de Séquence : Signalisation d'Appel WebRTC
+Flux d'établissement d'appel en temps réel avec activation de la caméra en cours d'appel :
 
 ```mermaid
 sequenceDiagram
@@ -286,16 +292,79 @@ sequenceDiagram
 
 ---
 
-## 7. Lancement Local
+## 3. Description Détaillée des Modules
 
-### Backend (NestJS)
+### 1. Authentification & Contrôle d'Accès (RBAC)
+- **Fonctionnalités** : Connexion, renouvellement de jetons via refresh tokens, et protection des routes par rôles (Gérant, Secrétaire, HR, Financier, Chef de Projet, Collaborateur, Stagiaire) et permissions granulaires (`users:read`, `tasks:write`, `finance:read`, `hr:write`, `documents:write`, etc.).
+
+### 2. CRM (Leads & Clients)
+- **Leads** : Fiches prospects (source, statut, valeur estimée, devise). Le statut progresse de `NEW` à `CONTACTED` et `QUALIFIED`.
+- **Clients** : Conversion de prospects qualifiés en comptes clients avec détails fiscaux (Matricule Fiscal), historique et facturation.
+
+### 3. Finance & Facturation
+- **Devis (Quotes) & Factures (Invoices)** : Gestion des montants, taxes, conditions et devises. Intégration de PDFKit pour générer dynamiquement des PDFs professionnels arborant le logo de l'entreprise.
+- **Dépenses (Expenses)** : Enregistrement des frais de l'entreprise avec workflow de validation multi-étapes.
+
+### 4. Ressources Humaines (RH)
+- **Profils Employés** : Suivi des contrats, postes, téléphones, et départements.
+- **Congés (Leave Requests)** : Demandes annuelles, maladie ou sans solde. Workflow de soumission pour les employés et d'approbation pour les RH avec mise à jour automatique des soldes.
+- **Organigramme (Org Chart)** : Structure arborescente interactive des départements et des chaînes hiérarchiques de rapports.
+
+### 5. Projets & Tâches
+- **Projets** : Fiches projets avec budgets, dates limites, et affectation de collaborateurs.
+- **Tableau Kanban** : Visualisation sous forme de colonnes (À faire, En cours, En révision, Fait, Bloqué). Prise en charge complète du Glisser-Déposer (HTML5 Drag & Drop) pour changer l'état des tâches avec persistance en base de données.
+
+### 6. Messagerie & Appels de Groupe
+- **Messagerie** : Salons de discussions généraux (canaux de projets, équipes) et messagerie directe (DMs). Accessible à tous les employés via l'annuaire de chat débridé.
+- **Système d'Appels WebRTC** : Aiguillage direct par socket aux participants en ligne, support de la caméra à la volée (Messenger-level camera switch), affichage des participants en ligne et minuteur de durée d'appel.
+
+### 7. Intelligence Center (IA & Décisionnel)
+- **Centre de Décisions** : Console centralisée pour les Gérants afin de valider en un clic les devis, factures et congés.
+- **Intelligence Artificielle** : Suggestions prédictives d'affectation des tâches aux membres d'équipe selon leur charge de travail.
+
+---
+
+## 4. Spécifications des Endpoints de l'API (Résumé)
+
+| Module | Méthode | Route | Description |
+| :--- | :--- | :--- | :--- |
+| **Auth** | `POST` | `/api/v1/auth/login` | Authentification utilisateur & génération de JWT |
+| **Users** | `GET` | `/api/v1/users/chat/directory` | Liste des utilisateurs actifs pour le chat (public) |
+| **CRM** | `GET` | `/api/v1/crm/leads` | Récupère la liste des leads (CRM) |
+| **Finance** | `POST` | `/api/v1/finance/invoices` | Création d'une nouvelle facture |
+| **HR** | `POST` | `/api/v1/hr/leave-requests` | Soumission d'une demande de congé |
+| **Tasks** | `PUT` | `/api/v1/tasks/:id` | Modification d'une tâche (ex: statut Kanban) |
+| **Chat** | `GET` | `/api/v1/chat/rooms` | Liste des espaces de travail de chat |
+
+---
+
+## 5. Guide d'Installation et Lancement
+
+### Prérequis
+- Node.js (v18+)
+- PostgreSQL installé et configuré
+- Fichier `.env` configuré dans `backend/`
+
+### Configuration et Seeding
 ```bash
-# Configuration de la base de données dans backend/.env
-# Lancer les serveurs de développement
+# 1. Installer les dépendances backend
+cd backend
+npm install
+
+# 2. Lancer les migrations Prisma & Seeder la base de données
+npx prisma migrate dev --name init
+npx prisma db seed
+
+# 3. Lancer le serveur NestJS en mode développement
 npm run start:dev
 ```
 
-### Frontend (React + Vite)
 ```bash
+# 4. Installer les dépendances frontend
+cd ../frontend
+npm install
+
+# 5. Lancer l'application web React
 npm run dev
 ```
+L'application est accessible à l'adresse `http://localhost:5173`.

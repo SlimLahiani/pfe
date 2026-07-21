@@ -98,7 +98,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Chiffre d'Affaires</p>
-            <h3 className="text-2xl font-bold text-white mt-1 truncate">{formatCurrency(totalRevenue)}</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1 truncate">{formatCurrency(totalRevenue)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6 transition-all hover:scale-[1.02] duration-200">
@@ -111,7 +111,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Dépenses Approuvées</p>
-            <h3 className="text-2xl font-bold text-white mt-1 truncate">{formatCurrency(totalExpenses)}</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1 truncate">{formatCurrency(totalExpenses)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6 transition-all hover:scale-[1.02] duration-200">
@@ -124,7 +124,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Bénéfice Net</p>
-            <h3 className="text-2xl font-bold text-white mt-1 truncate">{formatCurrency(netProfit)}</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1 truncate">{formatCurrency(netProfit)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6 transition-all hover:scale-[1.02] duration-200">
@@ -137,7 +137,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Membres de l'Équipe</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{(hrData?.totalEmployees ?? 0)} Collaborateurs</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{(hrData?.totalEmployees ?? 0)} Collaborateurs</h3>
           </div>
         </div>
 
@@ -153,7 +153,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total des Utilisateurs</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{usersData.length} Utilisateurs</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{usersData.length} Utilisateurs</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6 transition-all hover:scale-[1.02] duration-200">
@@ -166,7 +166,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Utilisateurs Actifs</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{usersData.filter((u: any) => u.isActive).length} Actifs</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{usersData.filter((u: any) => u.isActive).length} Actifs</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6 transition-all hover:scale-[1.02] duration-200">
@@ -179,41 +179,41 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Utilisateurs Connectés</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{onlineStats?.onlineCount ?? 0} En ligne</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{onlineStats?.onlineCount ?? 0} En ligne</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="glass-card rounded-2xl p-6 lg:col-span-2">
             <div className="flex justify-between items-center mb-4">
-              <h4 className="text-base font-bold text-white">Aperçu Général de l'Activité</h4>
+              <h4 className="text-base font-bold text-foreground">Aperçu Général de l'Activité</h4>
               <span className="text-xs text-muted-foreground">CREATIVART</span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4">
-              <div className="p-4 bg-white/5 rounded-xl text-center">
+              <div className="p-4 bg-black/5 rounded-xl text-center">
                 <p className="text-xs text-muted-foreground font-medium">Projets Actifs</p>
-                <p className="text-2xl font-extrabold text-white mt-1">{projects?.total ?? 0}</p>
+                <p className="text-2xl font-extrabold text-foreground mt-1">{projects?.total ?? 0}</p>
               </div>
-              <div className="p-4 bg-white/5 rounded-xl text-center">
+              <div className="p-4 bg-black/5 rounded-xl text-center">
                 <p className="text-xs text-muted-foreground font-medium">Devis Soumis</p>
-                <p className="text-2xl font-extrabold text-white mt-1">{quotes?.total ?? 0}</p>
+                <p className="text-2xl font-extrabold text-foreground mt-1">{quotes?.total ?? 0}</p>
               </div>
-              <div className="p-4 bg-white/5 rounded-xl text-center">
+              <div className="p-4 bg-black/5 rounded-xl text-center">
                 <p className="text-xs text-muted-foreground font-medium">Factures Total</p>
-                <p className="text-2xl font-extrabold text-white mt-1">{invoices?.total ?? 0}</p>
+                <p className="text-2xl font-extrabold text-foreground mt-1">{invoices?.total ?? 0}</p>
               </div>
             </div>
           </div>
 
           <div className="glass-card rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <h4 className="text-base font-bold text-white mb-4">Décisions en Attente ({totalPendingApprovals})</h4>
+              <h4 className="text-base font-bold text-foreground mb-4">Décisions en Attente ({totalPendingApprovals})</h4>
               <div className="space-y-3">
                 {pendingLeaves > 0 && (
                   <div className="flex items-start gap-3 p-3 bg-amber-500/5 rounded-xl border border-amber-500/10">
                     <UserCheck size={16} className="text-amber-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs font-semibold text-white">Congés en attente</p>
+                      <p className="text-xs font-semibold text-foreground">Congés en attente</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{pendingLeaves} demande(s) de congé à valider.</p>
                     </div>
                   </div>
@@ -222,7 +222,7 @@ export const DashboardOverview: React.FC = () => {
                   <div className="flex items-start gap-3 p-3 bg-indigo-500/5 rounded-xl border border-indigo-500/10">
                     <FileText size={16} className="text-indigo-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs font-semibold text-white">Devis en attente</p>
+                      <p className="text-xs font-semibold text-foreground">Devis en attente</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{pendingQuotes} devis en attente d'approbation.</p>
                     </div>
                   </div>
@@ -231,7 +231,7 @@ export const DashboardOverview: React.FC = () => {
                   <div className="flex items-start gap-3 p-3 bg-purple-500/5 rounded-xl border border-purple-500/10">
                     <FileCheck size={16} className="text-purple-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs font-semibold text-white">Factures en attente</p>
+                      <p className="text-xs font-semibold text-foreground">Factures en attente</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{pendingInvoices} facture(s) en attente d'approbation.</p>
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export const DashboardOverview: React.FC = () => {
                 )}
               </div>
             </div>
-            <Link to="/decision-center" className="w-full text-center bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold py-2.5 rounded-xl mt-4 transition-colors block">
+            <Link to="/decision-center" className="w-full text-center bg-primary hover:brightness-110 text-white text-xs font-semibold py-2.5 rounded-xl mt-4 transition-colors block">
               Aller au Centre de Décisions
             </Link>
           </div>
@@ -275,7 +275,7 @@ export const DashboardOverview: React.FC = () => {
               <Users size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Clients Actifs</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{activeClientsCount} Clients</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{activeClientsCount} Clients</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -283,7 +283,7 @@ export const DashboardOverview: React.FC = () => {
               <Zap size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Nouvelles Pistes</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{newLeadsCount} Leads</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{newLeadsCount} Leads</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -291,7 +291,7 @@ export const DashboardOverview: React.FC = () => {
               <FileText size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Devis en Attente</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{pendingQuotes.length} Devis</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{pendingQuotes.length} Devis</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -299,7 +299,7 @@ export const DashboardOverview: React.FC = () => {
               <FileCheck size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Factures en Attente</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{pendingInvoices.length} Factures</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{pendingInvoices.length} Factures</h3>
           </div>
         </div>
 
@@ -315,7 +315,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total des Employés</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{usersData.length} Employés</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{usersData.length} Employés</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6 transition-all hover:scale-[1.02] duration-200">
@@ -328,7 +328,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Nouveaux Employés (30j)</p>
-            <h3 className="text-2xl font-bold text-white mt-1">
+            <h3 className="text-2xl font-bold text-foreground mt-1">
               {usersData.filter((u: any) => {
                 const diff = Date.now() - new Date(u.createdAt).getTime();
                 return diff < 30 * 24 * 3600 * 1000;
@@ -346,37 +346,37 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Comptes Suspendus / En attente</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{usersData.filter((u: any) => !u.isActive).length} Suspendus</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{usersData.filter((u: any) => !u.isActive).length} Suspendus</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="glass-card rounded-2xl p-6 lg:col-span-2">
-            <h4 className="text-base font-bold text-white mb-4">Raccourcis Secrétariat</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Raccourcis Secrétariat</h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <Link to="/finance/quotes" className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-center flex flex-col items-center justify-center gap-2">
+              <Link to="/finance/quotes" className="p-4 bg-black/5 hover:bg-black/[0.04] rounded-2xl border border-black/[0.06] transition-all text-center flex flex-col items-center justify-center gap-2">
                 <Plus size={20} className="text-indigo-400" />
-                <span className="text-xs font-bold text-white">Nouveau Devis</span>
+                <span className="text-xs font-bold text-foreground">Nouveau Devis</span>
               </Link>
-              <Link to="/finance/invoices" className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-center flex flex-col items-center justify-center gap-2">
+              <Link to="/finance/invoices" className="p-4 bg-black/5 hover:bg-black/[0.04] rounded-2xl border border-black/[0.06] transition-all text-center flex flex-col items-center justify-center gap-2">
                 <Plus size={20} className="text-purple-400" />
-                <span className="text-xs font-bold text-white">Nouvelle Facture</span>
+                <span className="text-xs font-bold text-foreground">Nouvelle Facture</span>
               </Link>
-              <Link to="/crm/leads" className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all text-center flex flex-col items-center justify-center gap-2">
+              <Link to="/crm/leads" className="p-4 bg-black/5 hover:bg-black/[0.04] rounded-2xl border border-black/[0.06] transition-all text-center flex flex-col items-center justify-center gap-2">
                 <Plus size={20} className="text-emerald-400" />
-                <span className="text-xs font-bold text-white">Nouvelle Piste</span>
+                <span className="text-xs font-bold text-foreground">Nouvelle Piste</span>
               </Link>
             </div>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
-            <h4 className="text-base font-bold text-white mb-4">Réunions d'Aujourd'hui</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Réunions d'Aujourd'hui</h4>
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
               {upcomingEvents.map(evt => (
-                <div key={evt.id} className="flex gap-3 p-3 bg-white/5 rounded-xl border border-white/5">
+                <div key={evt.id} className="flex gap-3 p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                   <CalendarIcon size={14} className="text-indigo-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-bold text-white">{evt.title}</p>
+                    <p className="text-xs font-bold text-foreground">{evt.title}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       {new Date(evt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
@@ -411,7 +411,7 @@ export const DashboardOverview: React.FC = () => {
               <Users size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Collaborateurs Actifs</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{activeEmployeesCount} / {totalEmployeesCount} Employés</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{activeEmployeesCount} / {totalEmployeesCount} Employés</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -419,7 +419,7 @@ export const DashboardOverview: React.FC = () => {
               <Clock size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Demandes de Congé en Attente</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{hrData?.leaveRequestsPending ?? pendingLeaves.length} Demandes</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{hrData?.leaveRequestsPending ?? pendingLeaves.length} Demandes</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -427,18 +427,18 @@ export const DashboardOverview: React.FC = () => {
               <FileCheck size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Taux de Présence</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{attendanceRate}% Présents</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{attendanceRate}% Présents</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="glass-card rounded-2xl p-6 lg:col-span-2">
-            <h4 className="text-base font-bold text-white mb-4">Congés en attente de revue RH</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Congés en attente de revue RH</h4>
             <div className="space-y-3">
               {pendingLeaves.map(leave => (
-                <div key={leave.id} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                <div key={leave.id} className="flex justify-between items-center p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                   <div>
-                    <p className="text-xs font-bold text-white">
+                    <p className="text-xs font-bold text-foreground">
                       {leave.employee?.user?.firstName} {leave.employee?.user?.lastName}
                     </p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -458,16 +458,16 @@ export const DashboardOverview: React.FC = () => {
 
           <div className="glass-card rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <h4 className="text-base font-bold text-white mb-4">Actions RH</h4>
+              <h4 className="text-base font-bold text-foreground mb-4">Actions RH</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Configurez de nouvelles fiches d'employés, suivez les demandes d'absence et générez les contrats de travail dans la section RH.
               </p>
             </div>
             <div className="space-y-2 mt-6">
-              <Link to="/hr/employees" className="w-full text-center bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors block">
+              <Link to="/hr/employees" className="w-full text-center bg-primary hover:brightness-110 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors block">
                 Nouveau Collaborateur
               </Link>
-              <Link to="/hr/leave-requests" className="w-full text-center bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold py-2.5 rounded-xl transition-colors block">
+              <Link to="/hr/leave-requests" className="w-full text-center bg-black/5 hover:bg-black/[0.04] border border-black/[0.08] text-foreground text-xs font-semibold py-2.5 rounded-xl transition-colors block">
                 Voir tous les congés
               </Link>
             </div>
@@ -498,7 +498,7 @@ export const DashboardOverview: React.FC = () => {
               <DollarSign size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Recouvrement Réalisé</p>
-            <h3 className="text-xl font-bold text-white mt-1 truncate">{formatCurrency(totalRevenue)}</h3>
+            <h3 className="text-xl font-bold text-foreground mt-1 truncate">{formatCurrency(totalRevenue)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -506,7 +506,7 @@ export const DashboardOverview: React.FC = () => {
               <Clock size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Créances Clients</p>
-            <h3 className="text-xl font-bold text-white mt-1 truncate">{formatCurrency(outstandingRevenue)}</h3>
+            <h3 className="text-xl font-bold text-foreground mt-1 truncate">{formatCurrency(outstandingRevenue)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -514,7 +514,7 @@ export const DashboardOverview: React.FC = () => {
               <AlertCircle size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Factures En Retard</p>
-            <h3 className="text-xl font-bold text-white mt-1 truncate">{formatCurrency(overdueRevenue)}</h3>
+            <h3 className="text-xl font-bold text-foreground mt-1 truncate">{formatCurrency(overdueRevenue)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -522,21 +522,21 @@ export const DashboardOverview: React.FC = () => {
               <TrendingUp size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Trésorerie Estative</p>
-            <h3 className="text-xl font-bold text-white mt-1 truncate">{formatCurrency(cashFlow)}</h3>
+            <h3 className="text-xl font-bold text-foreground mt-1 truncate">{formatCurrency(cashFlow)}</h3>
           </div>
         </div>
 
         <div className="glass-card rounded-2xl p-6">
-          <h4 className="text-base font-bold text-white mb-4">Facturation Récente</h4>
+          <h4 className="text-base font-bold text-foreground mb-4">Facturation Récente</h4>
           <div className="space-y-3">
             {(invoices?.data ?? []).slice(0, 5).map(inv => (
-              <div key={inv.id} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+              <div key={inv.id} className="flex justify-between items-center p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                 <div>
-                  <p className="text-xs font-bold text-white">{inv.client?.companyName ?? inv.client?.name ?? 'Client Inconnu'}</p>
+                  <p className="text-xs font-bold text-foreground">{inv.client?.companyName ?? inv.client?.name ?? 'Client Inconnu'}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">#Facture {inv.reference ?? inv.invoiceNumber}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-white">{formatCurrency(Number(inv.total ?? inv.totalAmount ?? 0))}</p>
+                  <p className="text-xs font-bold text-foreground">{formatCurrency(Number(inv.total ?? inv.totalAmount ?? 0))}</p>
                   <span className="text-[9px] text-indigo-400 font-semibold">{inv.status}</span>
                 </div>
               </div>
@@ -574,7 +574,7 @@ export const DashboardOverview: React.FC = () => {
               <Clock size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Tâches en Cours</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{inProgressTasks.length} Tâches</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{inProgressTasks.length} Tâches</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -582,7 +582,7 @@ export const DashboardOverview: React.FC = () => {
               <Briefcase size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Mes Projets</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{myProjects.length} Projets</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{myProjects.length} Projets</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -590,7 +590,7 @@ export const DashboardOverview: React.FC = () => {
               <CheckCircle size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Tâches Complétées</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{completedTasksCount} Tâches</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{completedTasksCount} Tâches</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -598,18 +598,18 @@ export const DashboardOverview: React.FC = () => {
               <CalendarIcon size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Briefings Aujourd'hui</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{todayEvents.length} Réunions</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{todayEvents.length} Réunions</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="glass-card rounded-2xl p-6 lg:col-span-2">
-            <h4 className="text-base font-bold text-white mb-4">Mes Tâches Actives</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Mes Tâches Actives</h4>
             <div className="space-y-3">
               {[...inProgressTasks, ...todoTasks].slice(0, 5).map(task => (
-                <div key={task.id} className="flex justify-between items-center p-3.5 bg-white/5 rounded-xl border border-white/5">
+                <div key={task.id} className="flex justify-between items-center p-3.5 bg-black/5 rounded-xl border border-black/[0.06]">
                   <div>
-                    <h5 className="text-xs font-bold text-white">{task.title}</h5>
+                    <h5 className="text-xs font-bold text-foreground">{task.title}</h5>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       Projet: {task.project?.name ?? 'Aucun'} · Échéance: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'Non définie'}
                     </p>
@@ -623,18 +623,18 @@ export const DashboardOverview: React.FC = () => {
                 <p className="text-xs text-muted-foreground text-center py-6">Toutes les tâches sont terminées ! 🎉</p>
               )}
             </div>
-            <Link to="/tasks" className="w-full text-center bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold py-2.5 rounded-xl mt-4 transition-colors block">
+            <Link to="/tasks" className="w-full text-center bg-black/5 hover:bg-black/[0.04] border border-black/[0.08] text-foreground text-xs font-semibold py-2.5 rounded-xl mt-4 transition-colors block">
               Voir Toutes Mes Tâches
             </Link>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
-            <h4 className="text-base font-bold text-white mb-4">Statut Mes Demandes de Congé</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Statut Mes Demandes de Congé</h4>
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
               {(leaveRequests?.data ?? []).slice(0, 4).map(leave => (
-                <div key={leave.id} className="p-3 bg-white/5 rounded-xl border border-white/5">
+                <div key={leave.id} className="p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-white">{leave.type}</span>
+                    <span className="text-xs font-bold text-foreground">{leave.type}</span>
                     <span className={`text-[9px] px-2 py-0.5 rounded-full font-semibold ${
                       leave.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                       leave.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
@@ -652,7 +652,7 @@ export const DashboardOverview: React.FC = () => {
                 <p className="text-xs text-muted-foreground text-center py-8">Aucune demande soumise.</p>
               )}
             </div>
-            <Link to="/hr/leave-requests" className="w-full text-center bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold py-2.5 rounded-xl mt-4 transition-colors block">
+            <Link to="/hr/leave-requests" className="w-full text-center bg-primary hover:brightness-110 text-white text-xs font-semibold py-2.5 rounded-xl mt-4 transition-colors block">
               Nouvelle Demande de Congé
             </Link>
           </div>
@@ -680,7 +680,7 @@ export const DashboardOverview: React.FC = () => {
               <Users size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Leads</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{totalLeads} Pistes</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{totalLeads} Pistes</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -688,7 +688,7 @@ export const DashboardOverview: React.FC = () => {
               <Clock size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Nouveaux Leads</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{newLeads} Nouveaux</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{newLeads} Nouveaux</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -696,7 +696,7 @@ export const DashboardOverview: React.FC = () => {
               <TrendingUp size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Taux de Conversion</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{conversionRate}%</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{conversionRate}%</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -704,17 +704,17 @@ export const DashboardOverview: React.FC = () => {
               <Briefcase size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Campagnes Actives</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{projects?.total ?? 0} Projets</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{projects?.total ?? 0} Projets</h3>
           </div>
         </div>
 
         <div className="glass-card rounded-2xl p-6">
-          <h4 className="text-base font-bold text-white mb-4">Leads Récents</h4>
+          <h4 className="text-base font-bold text-foreground mb-4">Leads Récents</h4>
           <div className="space-y-3">
             {(leads?.data ?? []).slice(0, 5).map(lead => (
-              <div key={lead.id} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+              <div key={lead.id} className="flex justify-between items-center p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                 <div>
-                  <p className="text-xs font-bold text-white">{lead.company || `${lead.firstName} ${lead.lastName}`}</p>
+                  <p className="text-xs font-bold text-foreground">{lead.company || `${lead.firstName} ${lead.lastName}`}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Source: {lead.source || 'Inconnue'}</p>
                 </div>
                 <span className="text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">
@@ -750,7 +750,7 @@ export const DashboardOverview: React.FC = () => {
               <DollarSign size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Valeur du Pipeline</p>
-            <h3 className="text-xl font-bold text-white mt-1 truncate">{formatCurrency(pipelineValue)}</h3>
+            <h3 className="text-xl font-bold text-foreground mt-1 truncate">{formatCurrency(pipelineValue)}</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -758,7 +758,7 @@ export const DashboardOverview: React.FC = () => {
               <FileText size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Total Devis</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{totalQuotes} Devis</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{totalQuotes} Devis</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -766,7 +766,7 @@ export const DashboardOverview: React.FC = () => {
               <FileCheck size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Devis Approuvés / Acceptés</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{approvedQuotesCount} Devis</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{approvedQuotesCount} Devis</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -774,21 +774,21 @@ export const DashboardOverview: React.FC = () => {
               <Users size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Pistes CRM</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{totalLeads} Leads</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{totalLeads} Leads</h3>
           </div>
         </div>
 
         <div className="glass-card rounded-2xl p-6">
-          <h4 className="text-base font-bold text-white mb-4">Devis Récents</h4>
+          <h4 className="text-base font-bold text-foreground mb-4">Devis Récents</h4>
           <div className="space-y-3">
             {(quotes?.data ?? []).slice(0, 5).map(quote => (
-              <div key={quote.id} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+              <div key={quote.id} className="flex justify-between items-center p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                 <div>
-                  <p className="text-xs font-bold text-white">{quote.client?.companyName ?? 'Client Inconnu'}</p>
+                  <p className="text-xs font-bold text-foreground">{quote.client?.companyName ?? 'Client Inconnu'}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Réf: {quote.reference}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-white">{formatCurrency(Number(quote.total))}</p>
+                  <p className="text-xs font-bold text-foreground">{formatCurrency(Number(quote.total))}</p>
                   <span className="text-[9px] text-indigo-400 font-semibold">{quote.status}</span>
                 </div>
               </div>
@@ -820,7 +820,7 @@ export const DashboardOverview: React.FC = () => {
               <Briefcase size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Projets Actifs</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{activeProjects.length} Projets</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{activeProjects.length} Projets</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -828,7 +828,7 @@ export const DashboardOverview: React.FC = () => {
               <Clock size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Tâches en Cours</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{pendingTasks.length} Tâches</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{pendingTasks.length} Tâches</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -836,7 +836,7 @@ export const DashboardOverview: React.FC = () => {
               <CheckCircle size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Tâches Terminées</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{completedTasks.length} Tâches</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{completedTasks.length} Tâches</h3>
           </div>
 
           <div className="glass-card rounded-2xl p-6">
@@ -844,18 +844,18 @@ export const DashboardOverview: React.FC = () => {
               <Users size={20} />
             </div>
             <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Équipe Projet</p>
-            <h3 className="text-2xl font-bold text-white mt-1">{employees?.total ?? 0} Membres</h3>
+            <h3 className="text-2xl font-bold text-foreground mt-1">{employees?.total ?? 0} Membres</h3>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="glass-card rounded-2xl p-6 lg:col-span-2">
-            <h4 className="text-base font-bold text-white mb-4">Projets en Cours</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Projets en Cours</h4>
             <div className="space-y-3">
               {activeProjects.slice(0, 5).map(project => (
-                <div key={project.id} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                <div key={project.id} className="flex justify-between items-center p-3 bg-black/5 rounded-xl border border-black/[0.06]">
                   <div>
-                    <h5 className="text-xs font-bold text-white">{project.name}</h5>
+                    <h5 className="text-xs font-bold text-foreground">{project.name}</h5>
                     <p className="text-[10px] text-muted-foreground mt-0.5">Budget: {formatCurrency(Number(project.budget || 0))}</p>
                   </div>
                   <span className="text-[9px] bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-semibold uppercase">
@@ -870,13 +870,13 @@ export const DashboardOverview: React.FC = () => {
           </div>
 
           <div className="glass-card rounded-2xl p-6">
-            <h4 className="text-base font-bold text-white mb-4">Charge de travail équipe</h4>
+            <h4 className="text-base font-bold text-foreground mb-4">Charge de travail équipe</h4>
             <div className="space-y-3">
               {(employees?.data ?? []).slice(0, 5).map(emp => {
                 const empTasks = (tasks?.data ?? []).filter(t => t.assignee?.id === emp.userId && t.status !== 'DONE' && t.status !== 'COMPLETED').length;
                 return (
-                  <div key={emp.id} className="flex justify-between items-center p-2.5 bg-white/5 rounded-xl border border-white/5">
-                    <span className="text-xs font-bold text-white">{emp.user?.firstName} {emp.user?.lastName}</span>
+                  <div key={emp.id} className="flex justify-between items-center p-2.5 bg-black/5 rounded-xl border border-black/[0.06]">
+                    <span className="text-xs font-bold text-foreground">{emp.user?.firstName} {emp.user?.lastName}</span>
                     <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold ${
                       empTasks > 4 ? 'bg-rose-500/10 text-rose-400' : empTasks > 2 ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400'
                     }`}>
@@ -895,17 +895,17 @@ export const DashboardOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome banner */}
-      <div className="glass-panel rounded-2xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-white/5 relative overflow-hidden">
+      <div className="glass-panel rounded-2xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-black/[0.06] relative overflow-hidden">
         <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
         <div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight animate-fade-in">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight animate-fade-in">
             {getGreeting()}, {user?.firstName}!
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
             Bienvenue sur votre portail d'entreprise CREATIVART. Voici l'aperçu de vos activités.
           </p>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 flex items-center gap-2 shrink-0">
+        <div className="bg-black/5 border border-black/[0.08] rounded-xl px-4 py-2 flex items-center gap-2 shrink-0">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-xs font-semibold text-gray-200">
             {user?.role ? (typeof user.role === 'string' ? user.role : (user.role as any).name || '').replace(/_/g, ' ') : ''} · Connecté

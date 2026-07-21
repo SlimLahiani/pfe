@@ -142,6 +142,28 @@ export class UsersService {
     });
   }
 
+  async findChatDirectory() {
+    const users = await this.prisma.user.findMany({
+      where: { isArchived: false, isActive: true },
+      include: {
+        role: true,
+        employeeProfile: {
+          include: {
+            department: true
+          }
+        }
+      },
+      orderBy: {
+        firstName: 'asc',
+      },
+    });
+
+    return users.map((user) => {
+      const { passwordHash: _, ...result } = user;
+      return result;
+    });
+  }
+
   async findAllRoles() {
     return this.prisma.role.findMany({
       include: {

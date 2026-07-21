@@ -52,9 +52,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return;
     }
 
-    console.log('[Socket] 🔌 Initializing Socket.IO Manager → http://localhost:3000');
+    console.log('[Socket] 🔌 Initializing Socket.IO Manager → http://localhost:3005');
 
-    const manager = new Manager('http://localhost:3000', {
+    const manager = new Manager('http://localhost:3005', {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: Infinity,

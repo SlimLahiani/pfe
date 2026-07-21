@@ -56,12 +56,20 @@ export class PdfService {
     doc.rect(0, 0, doc.page.width, 14).fill(this.colors.secondary);
 
     // Left Column: Logo & Company Info
-    doc.fillColor(this.colors.primary).fontSize(24).font('Helvetica-Bold').text(this.company.name, 50, 40);
-    doc.fillColor(this.colors.secondary).fontSize(8).font('Helvetica-Bold').text(this.company.slogan.toUpperCase(), 50, 68);
-
-    doc.fillColor(this.colors.textLight).fontSize(8).font('Helvetica');
-    doc.text(`Tél : ${this.company.phone}  |  Email : ${this.company.email}`, 50, 80);
-    doc.text(`Adresse : ${this.company.address}`, 50, 92);
+    const logoPath = path.join(process.cwd(), 'storage', 'logo.png');
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, 50, 20, { height: 45 });
+      doc.fillColor(this.colors.secondary).fontSize(7.5).font('Helvetica-Bold').text(this.company.slogan.toUpperCase(), 50, 70);
+      doc.fillColor(this.colors.textLight).fontSize(8).font('Helvetica');
+      doc.text(`Tél : ${this.company.phone}  |  Email : ${this.company.email}`, 50, 82);
+      doc.text(`Adresse : ${this.company.address}`, 50, 94);
+    } else {
+      doc.fillColor(this.colors.primary).fontSize(24).font('Helvetica-Bold').text(this.company.name, 50, 40);
+      doc.fillColor(this.colors.secondary).fontSize(8).font('Helvetica-Bold').text(this.company.slogan.toUpperCase(), 50, 68);
+      doc.fillColor(this.colors.textLight).fontSize(8).font('Helvetica');
+      doc.text(`Tél : ${this.company.phone}  |  Email : ${this.company.email}`, 50, 80);
+      doc.text(`Adresse : ${this.company.address}`, 50, 92);
+    }
 
     // Right Column: Document Type Headline
     const rightX = doc.page.width - 250;

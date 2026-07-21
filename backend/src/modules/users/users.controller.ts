@@ -25,6 +25,11 @@ export class UsersController {
     return this.usersService.findAll({ showArchived: showArchived === 'true' });
   }
 
+  @Get('chat/directory')
+  findChatDirectory() {
+    return this.usersService.findChatDirectory();
+  }
+
   @Get('roles/all')
   @RequirePermissions('users:read')
   findAllRoles() {

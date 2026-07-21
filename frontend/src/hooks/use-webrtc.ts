@@ -24,9 +24,11 @@ export const useWebRTC = (
 ) => {
   const [callState, setCallState] = useState<CallState>('idle');
   const [incomingCall, setIncomingCall] = useState<CallInfo | null>(null);
+  const [participants, setParticipants] = useState<{ id: string; name: string }[]>([]);
   const [isVideo, setIsVideo] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
+  const [remoteCameraOff, setRemoteCameraOff] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
 
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -58,7 +60,9 @@ export const useWebRTC = (
     setIsVideo(false);
     setIsMuted(false);
     setIsCameraOff(false);
+    setRemoteCameraOff(true);
     setIsScreenSharing(false);
+    setParticipants([]);
     console.log('[WebRTC] Cleaned up peer connection and media streams');
   }, []);
 
@@ -108,11 +112,18 @@ export const useWebRTC = (
       console.log(`[WebRTC] Starting ${video ? 'video' : 'audio'} call in room ${roomId}`);
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: video,
+        video: true,
       });
 
       localStreamRef.current = stream;
       activeRoomRef.current = roomId;
+
+      if (!video) {
+        stream.getVideoTracks().forEach(t => { t.enabled = false; });
+        setIsCameraOff(true);
+      } else {
+        setIsCameraOff(false);
+      }
 
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
@@ -135,6 +146,8 @@ export const useWebRTC = (
 
       setIsVideo(video);
       setCallState('calling');
+      setParticipants([{ id: currentUserId, name: currentUserName }]);
+      setRemoteCameraOff(!video);
     } catch (err) {
       console.error('[WebRTC] Failed to start call:', err);
       cleanup();
@@ -151,28 +164,45 @@ export const useWebRTC = (
       console.log(`[WebRTC] Accepting call in room ${roomId}`);
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: video,
+        video: true,
       });
 
       localStreamRef.current = stream;
       activeRoomRef.current = roomId;
 
+      if (!video) {
+        stream.getVideoTracks().forEach(t => { t.enabled = false; });
+        setIsCameraOff(true);
+      } else {
+        setIsCameraOff(false);
+      }
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
 
-      const pc = createPeerConnection(roomId);
+      const pc = pcRef.current || createPeerConnection(roomId);
       pcRef.current = pc;
       stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
 
       socket.emit('webrtc_call_accept', {
         roomId,
         callerId: incomingCall.callerId,
+        acceptedByName: currentUserName,
+        answer,
       });
 
       setIsVideo(video);
       setCallState('connected');
       setIncomingCall(null);
+      setParticipants([
+        { id: incomingCall.callerId, name: incomingCall.callerName },
+        { id: currentUserId, name: currentUserName }
+      ]);
+      setRemoteCameraOff(!video);
     } catch (err) {
       console.error('[WebRTC] Failed to accept call:', err);
       rejectCall();
@@ -212,9 +242,18 @@ export const useWebRTC = (
   const toggleCamera = useCallback(() => {
     const stream = localStreamRef.current;
     if (!stream) return;
-    stream.getVideoTracks().forEach(t => { t.enabled = !t.enabled; });
-    setIsCameraOff(prev => !prev);
-  }, []);
+    const newState = !isCameraOff;
+    stream.getVideoTracks().forEach(t => { t.enabled = !newState; });
+    setIsCameraOff(newState);
+
+    const socket = socketRef.current;
+    if (socket && activeRoomRef.current) {
+      socket.emit('webrtc_camera_state', {
+        roomId: activeRoomRef.current,
+        isCameraOff: newState,
+      });
+    }
+  }, [isCameraOff, socketRef]);
 
   const toggleScreenShare = useCallback(async () => {
     if (!pcRef.current) return;
@@ -316,14 +355,27 @@ export const useWebRTC = (
       cleanup();
     };
 
-    const handleAcceptResponse = async (data: { roomId: string }) => {
-      if (pcRef.current && pcRef.current.localDescription) {
-        if (pcRef.current.signalingState === 'have-remote-offer') {
-          const answer = await pcRef.current.createAnswer();
-          await pcRef.current.setLocalDescription(answer);
-          socket.emit('webrtc_call_answer', { roomId: data.roomId, answer });
+    const handleAcceptResponse = async (data: { roomId: string; acceptedBy?: string; acceptedByName?: string; answer?: any }) => {
+      if (pcRef.current && data.answer) {
+        try {
+          await pcRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+          setCallState('connected');
+          if (data.acceptedBy && data.acceptedByName) {
+            setParticipants((prev) => {
+              const exists = prev.some((p) => p.id === data.acceptedBy);
+              if (exists) return prev;
+              return [...prev, { id: data.acceptedBy!, name: data.acceptedByName! }];
+            });
+          }
+          console.log(`[WebRTC] Call connected via accept response in room ${data.roomId}`);
+        } catch (err) {
+          console.error('[WebRTC] Failed to set remote description from accept response:', err);
         }
       }
+    };
+
+    const handleRemoteCameraState = (data: { userId: string; isCameraOff: boolean }) => {
+      setRemoteCameraOff(data.isCameraOff);
     };
 
     socket.on('webrtc_incoming_call', handleIncomingOffer);
@@ -333,6 +385,7 @@ export const useWebRTC = (
     socket.on('webrtc_call_rejected', handleCallRejected);
     socket.on('webrtc_call_ended', handleCallEnded);
     socket.on('webrtc_accept_response', handleAcceptResponse);
+    socket.on('webrtc_remote_camera_state', handleRemoteCameraState);
 
     return () => {
       socket.off('webrtc_incoming_call', handleIncomingOffer);
@@ -342,6 +395,7 @@ export const useWebRTC = (
       socket.off('webrtc_call_rejected', handleCallRejected);
       socket.off('webrtc_call_ended', handleCallEnded);
       socket.off('webrtc_accept_response', handleAcceptResponse);
+      socket.off('webrtc_remote_camera_state', handleRemoteCameraState);
       console.log('[WebRTC] Signaling listeners removed');
     };
   // socketInstance is tracked state that updates when socketRef.current changes
@@ -351,9 +405,11 @@ export const useWebRTC = (
   return {
     callState,
     incomingCall,
+    participants,
     isVideo,
     isMuted,
     isCameraOff,
+    remoteCameraOff,
     isScreenSharing,
     localVideoRef,
     remoteVideoRef,

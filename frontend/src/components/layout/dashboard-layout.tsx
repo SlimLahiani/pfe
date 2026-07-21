@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/auth-context';
 import { useSocket } from '../../hooks/use-socket';
 import { useNotifications, useMarkNotificationRead } from '../../hooks/use-api';
+import { Logo } from '../shared/logo';
 import {
   LayoutDashboard,
   Users,
@@ -329,6 +330,14 @@ export const DashboardLayout: React.FC = () => {
   const isChildActive = (children?: { path: string }[]) =>
     children?.some((c) => location.pathname === c.path) ?? false;
 
+  if (location.pathname === '/chat') {
+    return (
+      <div className="h-screen w-screen overflow-hidden bg-background">
+        <Outlet />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex bg-background">
       {/* Mobile Sidebar Backdrop */}
@@ -342,23 +351,18 @@ export const DashboardLayout: React.FC = () => {
       {/* Sidebar Navigation */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 w-64 bg-card/40 backdrop-blur-xl border-r border-white/5 z-40 transition-transform duration-300 lg:translate-x-0 lg:static lg:flex lg:flex-col',
+          'fixed inset-y-0 left-0 w-64 bg-card/75 backdrop-blur-xl border-r border-black/[0.06] z-40 transition-transform duration-300 lg:translate-x-0 lg:static lg:flex lg:flex-col',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/5 shrink-0">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/20">
-              C
-            </div>
-            <span className="font-extrabold text-white text-lg tracking-wide">
-              CREATIV<span className="text-indigo-400">ART</span>
-            </span>
+        <div className="h-24 flex items-center justify-between px-6 border-b border-black/[0.06] shrink-0">
+          <Link to="/" className="flex items-center justify-center w-full">
+            <Logo iconSize="sm" />
           </Link>
           <button
             onClick={() => setIsSidebarOpen(false)}
-            className="lg:hidden text-muted-foreground hover:text-white"
+            className="lg:hidden text-muted-foreground hover:text-foreground"
           >
             <X size={20} />
           </button>
@@ -377,12 +381,12 @@ export const DashboardLayout: React.FC = () => {
                     className={cn(
                       'w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
                       hasActiveChild
-                        ? 'text-indigo-300 bg-indigo-500/5'
-                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                        ? 'text-primary bg-primary/5 shadow-inner'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-black/5'
                     )}
                   >
                     <span className="flex items-center gap-3">
-                      <span className={hasActiveChild ? 'text-indigo-400' : 'text-gray-500'}>
+                      <span className={hasActiveChild ? 'text-primary' : 'text-gray-500'}>
                         {item.icon}
                       </span>
                       {item.label}
@@ -393,7 +397,7 @@ export const DashboardLayout: React.FC = () => {
                     }
                   </button>
                   {isExpanded && (
-                    <div className="ml-8 mt-0.5 space-y-0.5 border-l border-white/5 pl-3">
+                    <div className="ml-8 mt-0.5 space-y-0.5 border-l border-black/[0.06] pl-3">
                       {item.children.map((child) => {
                         const isActive = location.pathname === child.path;
                         return (
@@ -404,8 +408,8 @@ export const DashboardLayout: React.FC = () => {
                             className={cn(
                               'flex items-center py-2 px-2 rounded-lg text-xs font-medium transition-all duration-150',
                               isActive
-                                ? 'text-indigo-300 bg-indigo-500/10'
-                                : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                                ? 'text-primary bg-primary/10'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-black/5'
                             )}
                           >
                             {child.label}
@@ -428,12 +432,12 @@ export const DashboardLayout: React.FC = () => {
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group',
                   isActive
-                    ? 'bg-indigo-500/10 text-indigo-300'
-                    : 'text-muted-foreground hover:text-white hover:bg-white/5',
+                    ? 'bg-primary/10 text-primary border border-primary/10 shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-black/5',
                   isChatItem && 'mt-1'
                 )}
               >
-                <span className={isActive ? 'text-indigo-400' : 'text-gray-500 group-hover:text-gray-300'}>
+                <span className={isActive ? 'text-primary' : 'text-gray-500 group-hover:text-gray-300'}>
                   {item.icon}
                 </span>
                 {item.label}
@@ -446,16 +450,16 @@ export const DashboardLayout: React.FC = () => {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-white/5 bg-white/[0.01] shrink-0">
+        <div className="p-4 border-t border-black/[0.06] bg-black/[0.01] shrink-0">
           <div className="flex items-center gap-3 px-2 py-2 mb-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center text-indigo-300 font-bold text-sm">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-indigo-500/10 border border-black/[0.08] flex items-center justify-center text-primary font-bold text-sm">
               {user?.firstName[0]}{user?.lastName[0]}
             </div>
             <div className="overflow-hidden flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-semibold text-foreground truncate">
                 {user?.firstName} {user?.lastName}
               </p>
-              <span className="inline-flex px-2 py-0.5 rounded-full text-[9px] font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mt-0.5 uppercase tracking-wide">
+              <span className="inline-flex px-2 py-0.5 rounded-full text-[9px] font-semibold bg-primary/10 text-primary border border-primary/20 mt-0.5 uppercase tracking-wide">
                 {user?.role ? (typeof user.role === 'string' ? user.role : (user.role as any).name || '').replace(/_/g, ' ') : ''}
               </span>
             </div>
@@ -473,11 +477,11 @@ export const DashboardLayout: React.FC = () => {
       {/* Main Work Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-16 flex items-center justify-between px-6 border-b border-white/5 bg-card/25 backdrop-blur-md sticky top-0 z-20 shrink-0">
+        <header className="h-16 flex items-center justify-between px-6 border-b border-black/[0.06] bg-card/75 backdrop-blur-md sticky top-0 z-20 shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-1 text-muted-foreground hover:text-white focus:outline-none"
+              className="lg:hidden p-1 text-muted-foreground hover:text-foreground focus:outline-none"
             >
               <Menu size={24} />
             </button>
@@ -488,8 +492,8 @@ export const DashboardLayout: React.FC = () => {
               className={cn(
                 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-300',
                 isConnected
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                  : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                  : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
               )}
             >
               {isConnected ? <Wifi size={12} /> : <WifiOff size={12} />}
@@ -502,11 +506,11 @@ export const DashboardLayout: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setNotifOpen((p) => !p)}
-                className="relative p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 border border-white/5 transition-colors"
+                className="relative p-2 rounded-xl text-gray-400 hover:text-foreground hover:bg-black/5 border border-black/5 transition-colors"
               >
                 <Bell size={17} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-indigo-500 border-2 border-background text-white text-[9px] font-bold flex items-center justify-center px-1">
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-primary border-2 border-background text-white text-[9px] font-bold flex items-center justify-center px-1">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
@@ -514,18 +518,24 @@ export const DashboardLayout: React.FC = () => {
               {notifOpen && <NotificationPanel onClose={() => setNotifOpen(false)} />}
             </div>
 
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center text-indigo-300 text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-indigo-500/10 border border-black/[0.08] flex items-center justify-center text-primary text-xs font-bold">
               {user?.firstName[0]}
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-y-auto animate-fade-in">
-          <div className="max-w-7xl mx-auto w-full">
+        {location.pathname === '/chat' ? (
+          <main className="flex-1 overflow-hidden">
             <Outlet />
-          </div>
-        </main>
+          </main>
+        ) : (
+          <main className="flex-1 p-6 overflow-y-auto animate-fade-in">
+            <div className="max-w-7xl mx-auto w-full">
+              <Outlet />
+            </div>
+          </main>
+        )}
       </div>
     </div>
   );

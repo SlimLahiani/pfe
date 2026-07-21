@@ -40,78 +40,108 @@ interface TaskFormData {
 
 const KanbanColumn: React.FC<{
   title: string;
+  statusValue: string;
   tasks: Task[];
   color: string;
   isEmployee?: boolean;
   onEdit: (t: Task) => void;
   onDelete: (id: string) => void;
   onRestore?: (id: string) => void;
-}> = ({ title, tasks, color, isEmployee, onEdit, onDelete, onRestore }) => (
-  <div className="flex-1 min-w-[260px] bg-white/[0.01] border border-white/[0.03] rounded-2xl p-4 flex flex-col max-h-[70vh]">
-    <div className="flex items-center gap-2 mb-4 px-1 pb-2 border-b border-white/[0.05]">
-      <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-      <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider">{title}</h4>
-      <span className="ml-auto text-xs font-bold text-muted-foreground bg-white/5 px-2.5 py-0.5 rounded-full">{tasks.length}</span>
-    </div>
-    <div className="space-y-2.5 overflow-y-auto pr-1 flex-1">
-      {tasks.map((task) => (
-        <div key={task.id} className="glass-card rounded-xl p-4 group hover:border-white/15 hover:shadow-lg transition-all duration-150 relative">
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-xs font-semibold text-white leading-relaxed line-clamp-2">{task.title}</p>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-              {((task as any).isArchived) ? (
-                <button onClick={() => onRestore?.(task.id)} className="p-1 rounded hover:bg-white/5 text-emerald-400 hover:text-emerald-300 transition-colors" title="Restaurer">
-                  <RotateCcw size={11} />
-                </button>
-              ) : (
-                <>
-                  <button onClick={() => onEdit(task)} className="p-1 rounded hover:bg-white/5 text-gray-500 hover:text-indigo-300 transition-colors">
-                    <Edit size={11} />
+  onDropTask: (taskId: string, targetStatus: string) => void;
+}> = ({ title, statusValue, tasks, color, isEmployee, onEdit, onDelete, onRestore, onDropTask }) => {
+  const [isOver, setIsOver] = useState(false);
+
+  return (
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsOver(true);
+      }}
+      onDragLeave={() => setIsOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsOver(false);
+        const taskId = e.dataTransfer.getData('text/plain');
+        if (taskId) {
+          onDropTask(taskId, statusValue);
+        }
+      }}
+      className={`flex-1 min-w-[260px] bg-white/[0.01] border rounded-2xl p-4 flex flex-col max-h-[70vh] transition-all duration-200 ${
+        isOver ? 'border-primary bg-primary/5 scale-[1.01]' : 'border-white/[0.03]'
+      }`}
+    >
+      <div className="flex items-center gap-2 mb-4 px-1 pb-2 border-b border-white/[0.05]">
+        <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
+        <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider">{title}</h4>
+        <span className="ml-auto text-xs font-bold text-muted-foreground bg-white/5 px-2.5 py-0.5 rounded-full">{tasks.length}</span>
+      </div>
+      <div className="space-y-2.5 overflow-y-auto pr-1 flex-1">
+        {tasks.map((task) => (
+          <div
+            key={task.id}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData('text/plain', task.id);
+            }}
+            className="glass-card rounded-xl p-4 group hover:border-white/15 hover:shadow-lg transition-all duration-150 relative cursor-grab active:cursor-grabbing"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-xs font-semibold text-white leading-relaxed line-clamp-2">{task.title}</p>
+              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                {((task as any).isArchived) ? (
+                  <button onClick={() => onRestore?.(task.id)} className="p-1 rounded hover:bg-white/5 text-emerald-400 hover:text-emerald-300 transition-colors" title="Restaurer">
+                    <RotateCcw size={11} />
                   </button>
-                  {!isEmployee && (
-                    <button onClick={() => onDelete(task.id)} className="p-1 rounded hover:bg-white/5 text-gray-500 hover:text-red-300 transition-colors">
-                      <Trash2 size={11} />
+                ) : (
+                  <>
+                    <button onClick={() => onEdit(task)} className="p-1 rounded hover:bg-white/5 text-gray-500 hover:text-indigo-300 transition-colors">
+                      <Edit size={11} />
                     </button>
-                  )}
-                </>
+                    {!isEmployee && (
+                      <button onClick={() => onDelete(task.id)} className="p-1 rounded hover:bg-white/5 text-gray-500 hover:text-red-300 transition-colors">
+                        <Trash2 size={11} />
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+            {task.description && (
+              <p className="text-[10px] text-muted-foreground/70 line-clamp-2 mt-1.5 leading-relaxed">{task.description}</p>
+            )}
+            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.03]">
+              <StatusBadge status={task.priority} />
+              {task.dueDate && (
+                <span className="text-[9px] text-muted-foreground/60 font-medium">
+                  📅 {new Date(task.dueDate).toLocaleDateString()}
+                </span>
               )}
             </div>
-          </div>
-          {task.description && (
-            <p className="text-[10px] text-muted-foreground/70 line-clamp-2 mt-1.5 leading-relaxed">{task.description}</p>
-          )}
-          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.03]">
-            <StatusBadge status={task.priority} />
-            {task.dueDate && (
-              <span className="text-[9px] text-muted-foreground/60 font-medium">
-                📅 {new Date(task.dueDate).toLocaleDateString()}
-              </span>
+            {(task.project || task.assignee) && (
+              <div className="flex items-center justify-between mt-2 pt-1">
+                {task.project ? (
+                  <span className="text-[9px] text-indigo-400 font-medium truncate max-w-[120px] flex items-center gap-1">
+                    <Folder size={8} /> {task.project.name}
+                  </span>
+                ) : <div />}
+                {task.assignee ? (
+                  <span className="text-[9px] text-muted-foreground/80 font-semibold flex items-center gap-1 shrink-0">
+                    <User size={8} /> {task.assignee.firstName} {task.assignee.lastName[0]}.
+                  </span>
+                ) : null}
+              </div>
             )}
           </div>
-          {(task.project || task.assignee) && (
-            <div className="flex items-center justify-between mt-2 pt-1">
-              {task.project ? (
-                <span className="text-[9px] text-indigo-400 font-medium truncate max-w-[120px] flex items-center gap-1">
-                  <Folder size={8} /> {task.project.name}
-                </span>
-              ) : <div />}
-              {task.assignee ? (
-                <span className="text-[9px] text-muted-foreground/80 font-semibold flex items-center gap-1 shrink-0">
-                  <User size={8} /> {task.assignee.firstName} {task.assignee.lastName[0]}.
-                </span>
-              ) : null}
-            </div>
-          )}
-        </div>
-      ))}
-      {tasks.length === 0 && (
-        <div className="h-24 border border-dashed border-white/[0.03] rounded-xl flex items-center justify-center text-[10px] text-muted-foreground/45">
-          Vide
-        </div>
-      )}
+        ))}
+        {tasks.length === 0 && (
+          <div className="h-24 border border-dashed border-white/[0.03] rounded-xl flex items-center justify-center text-[10px] text-muted-foreground/45">
+            Vide
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const TasksPage: React.FC = () => {
   const { user } = useAuth();
@@ -228,6 +258,28 @@ export const TasksPage: React.FC = () => {
 
   const tasks = data?.data ?? [];
   const byStatus = (status: string) => tasks.filter((t) => t.status === status);
+
+  const handleDropTask = React.useCallback(async (taskId: string, targetStatus: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task || task.status === targetStatus) return;
+
+    try {
+      await updateTask.mutateAsync({
+        id: taskId,
+        data: {
+          title: task.title,
+          description: task.description ?? undefined,
+          status: targetStatus,
+          priority: task.priority,
+          dueDate: task.dueDate ? task.dueDate.split('T')[0] : undefined,
+          projectId: task.projectId ?? undefined,
+          assigneeId: (task as any).assigneeId ?? (task as any).assignee?.id ?? undefined,
+        } as any,
+      });
+    } catch (err) {
+      console.error('[Tasks] Failed to update status on drop:', err);
+    }
+  }, [tasks, updateTask]);
 
   const columns: Column<Task>[] = [
     {
@@ -346,11 +398,11 @@ export const TasksPage: React.FC = () => {
             ))
           ) : (
             <>
-              <KanbanColumn title="À faire" tasks={byStatus('TODO')} color="bg-gray-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} />
-              <KanbanColumn title="En cours" tasks={byStatus('IN_PROGRESS')} color="bg-blue-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} />
-              <KanbanColumn title="En révision" tasks={byStatus('IN_REVIEW')} color="bg-purple-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} />
-              <KanbanColumn title="Fait" tasks={byStatus('DONE')} color="bg-emerald-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} />
-              <KanbanColumn title="Bloqué" tasks={byStatus('BLOCKED')} color="bg-red-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} />
+              <KanbanColumn title="À faire" statusValue="TODO" tasks={byStatus('TODO')} color="bg-gray-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} onDropTask={handleDropTask} />
+              <KanbanColumn title="En cours" statusValue="IN_PROGRESS" tasks={byStatus('IN_PROGRESS')} color="bg-blue-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} onDropTask={handleDropTask} />
+              <KanbanColumn title="En révision" statusValue="IN_REVIEW" tasks={byStatus('IN_REVIEW')} color="bg-purple-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} onDropTask={handleDropTask} />
+              <KanbanColumn title="Fait" statusValue="DONE" tasks={byStatus('DONE')} color="bg-emerald-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} onDropTask={handleDropTask} />
+              <KanbanColumn title="Bloqué" statusValue="BLOCKED" tasks={byStatus('BLOCKED')} color="bg-red-400" isEmployee={isEmployee} onEdit={openEdit} onDelete={(id) => setDeleteConfirm(id)} onRestore={(id) => restoreTask.mutate(id)} onDropTask={handleDropTask} />
             </>
           )}
         </div>

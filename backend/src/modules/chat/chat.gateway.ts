@@ -351,26 +351,44 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { roomId: string; offer: any; callerId: string; callerName: string; isVideo: boolean },
     @ConnectedSocket() client: Socket,
   ) {
-    client.to(`room_${data.roomId}`).emit('webrtc_incoming_call', {
-      roomId: data.roomId,
-      offer: data.offer,
-      callerId: data.callerId,
-      callerName: data.callerName,
-      isVideo: data.isVideo,
-    });
-    this.logger.log(`[CHAT] 📞 WebRTC offer from ${data.callerId} in room ${data.roomId} (video=${data.isVideo})`);
+    try {
+      const room = await this.chatService.findRoomById(data.roomId, client.data.userId);
+      const senderId = client.data.userId;
+
+      room.members.forEach((member) => {
+        if (member.userId === senderId) return;
+        const onlineSession = onlineUsers.get(member.userId);
+        if (onlineSession) {
+          this.server.to(onlineSession.socketId).emit('webrtc_incoming_call', {
+            roomId: data.roomId,
+            offer: data.offer,
+            callerId: data.callerId,
+            callerName: data.callerName,
+            isVideo: data.isVideo,
+          });
+        }
+      });
+      this.logger.log(`[CHAT] 📞 WebRTC offer from ${data.callerId} in room ${data.roomId} dispatched to online members (video=${data.isVideo})`);
+    } catch (err) {
+      this.logger.error(`[CHAT] Failed to dispatch call offer: ${err.message}`);
+    }
   }
 
   @SubscribeMessage('webrtc_call_accept')
   async handleCallAccept(
-    @MessageBody() data: { roomId: string; callerId: string },
+    @MessageBody() data: { roomId: string; callerId: string; acceptedByName?: string; answer?: any },
     @ConnectedSocket() client: Socket,
   ) {
-    client.to(`room_${data.roomId}`).emit('webrtc_accept_response', {
-      roomId: data.roomId,
-      acceptedBy: client.data.userId,
-    });
-    this.logger.log(`[CHAT] 📞 WebRTC call accepted by ${client.data.userId} in room ${data.roomId}`);
+    const onlineSession = onlineUsers.get(data.callerId);
+    if (onlineSession) {
+      this.server.to(onlineSession.socketId).emit('webrtc_accept_response', {
+        roomId: data.roomId,
+        acceptedBy: client.data.userId,
+        acceptedByName: data.acceptedByName,
+        answer: data.answer,
+      });
+    }
+    this.logger.log(`[CHAT] 📞 WebRTC call accepted by ${client.data.userId} to caller ${data.callerId}`);
   }
 
   @SubscribeMessage('webrtc_call_answer')
@@ -400,11 +418,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { roomId: string; callerId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    client.to(`room_${data.roomId}`).emit('webrtc_call_rejected', {
-      roomId: data.roomId,
-      rejectedBy: client.data.userId,
-    });
-    this.logger.log(`[CHAT] 📞 WebRTC call rejected by ${client.data.userId} in room ${data.roomId}`);
+    const onlineSession = onlineUsers.get(data.callerId);
+    if (onlineSession) {
+      this.server.to(onlineSession.socketId).emit('webrtc_call_rejected', {
+        roomId: data.roomId,
+        rejectedBy: client.data.userId,
+      });
+    }
+    this.logger.log(`[CHAT] 📞 WebRTC call rejected by ${client.data.userId} to caller ${data.callerId}`);
   }
 
   @SubscribeMessage('webrtc_call_end')
@@ -412,10 +433,32 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody() data: { roomId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    client.to(`room_${data.roomId}`).emit('webrtc_call_ended', {
-      roomId: data.roomId,
-      endedBy: client.data.userId,
-    });
+    try {
+      const room = await this.chatService.findRoomById(data.roomId, client.data.userId);
+      const senderId = client.data.userId;
+
+      room.members.forEach((member) => {
+        if (member.userId === senderId) return;
+        const onlineSession = onlineUsers.get(member.userId);
+        if (onlineSession) {
+          this.server.to(onlineSession.socketId).emit('webrtc_call_ended', {
+            roomId: data.roomId,
+            endedBy: senderId,
+          });
+        }
+      });
+    } catch {}
     this.logger.log(`[CHAT] 📞 WebRTC call ended by ${client.data.userId} in room ${data.roomId}`);
+  }
+
+  @SubscribeMessage('webrtc_camera_state')
+  async handleCameraState(
+    @MessageBody() data: { roomId: string; isCameraOff: boolean },
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.to(`room_${data.roomId}`).emit('webrtc_remote_camera_state', {
+      userId: client.data.userId,
+      isCameraOff: data.isCameraOff,
+    });
   }
 }

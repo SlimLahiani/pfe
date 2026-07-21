@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Hash, Lock, Globe, Search, Send, Paperclip, Smile,
   MessageSquare, Users, ChevronDown, Plus, MoreHorizontal,
   Edit2, Trash2, Reply, Check, CheckCheck, X, AtSign,
   DollarSign, UserCircle, Download, Phone, Video,
-  PhoneOff, MicOff, Mic, VideoOff, Monitor
+  PhoneOff, MicOff, Mic, VideoOff, Monitor, ArrowLeft
 } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../../lib/api';
@@ -92,7 +93,7 @@ export const Avatar: React.FC<{
         </div>
       )}
       {online !== undefined && (
-        <span className={cn('absolute bottom-0 right-0 rounded-full border-2 border-[#0f1117]', dotSizes[size], online ? 'bg-emerald-400' : 'bg-gray-600')} />
+        <span className={cn('absolute bottom-0 right-0 rounded-full border-2 border-card', dotSizes[size], online ? 'bg-emerald-500' : 'bg-gray-400')} />
       )}
     </div>
   );
@@ -121,13 +122,13 @@ const getRoomIcon = (type: string) => {
 
 const getRoomColor = (type: string) => {
   const colors: Record<string, string> = {
-    GLOBAL: 'bg-emerald-500/15 text-emerald-400',
-    PROJECT: 'bg-indigo-500/15 text-indigo-400',
-    DIRECT: 'bg-purple-500/15 text-purple-400',
-    HR: 'bg-sky-500/15 text-sky-400',
-    FINANCE: 'bg-amber-500/15 text-amber-400',
+    GLOBAL: 'bg-emerald-500/10 text-emerald-700',
+    PROJECT: 'bg-primary/10 text-primary',
+    DIRECT: 'bg-purple-500/10 text-purple-700',
+    HR: 'bg-sky-500/10 text-sky-700',
+    FINANCE: 'bg-amber-500/10 text-amber-700',
   };
-  return colors[type] || 'bg-indigo-500/15 text-indigo-400';
+  return colors[type] || 'bg-primary/10 text-primary';
 };
 
 const getRoomDisplayName = (room: ChatRoom, userId: string) => {
@@ -158,7 +159,7 @@ const RoomItem: React.FC<{
       onClick={onClick}
       className={cn(
         'w-full flex items-center gap-3 px-2.5 py-2 rounded-xl transition-all duration-150 text-left group',
-        isActive ? 'bg-indigo-500/10 border border-indigo-500/20' : 'hover:bg-white/[0.04] border border-transparent'
+        isActive ? 'bg-primary/10 border border-primary/20' : 'hover:bg-black/[0.03] border border-transparent'
       )}
     >
       <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', getRoomColor(dtype))}>
@@ -170,7 +171,7 @@ const RoomItem: React.FC<{
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
-          <p className={cn('text-sm font-medium truncate', isActive ? 'text-white' : 'text-gray-300 group-hover:text-white')}>
+          <p className={cn('text-sm font-medium truncate', isActive ? 'text-primary font-semibold' : 'text-foreground group-hover:text-primary')}>
             {name}
           </p>
           {lastMessage && (
@@ -180,13 +181,13 @@ const RoomItem: React.FC<{
           )}
         </div>
         {lastMessage && (
-          <p className="text-[11px] text-muted-foreground/70 truncate">
+          <p className="text-[11px] text-muted-foreground truncate">
             {lastMessage.isDeleted ? '🗑 Message supprimé' : lastMessage.content}
           </p>
         )}
       </div>
       {unread && unread > 0 ? (
-        <span className="shrink-0 min-w-[18px] h-[18px] rounded-full bg-indigo-500 text-white text-[9px] font-bold flex items-center justify-center px-1">
+        <span className="shrink-0 min-w-[18px] h-[18px] rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center px-1">
           {unread > 99 ? '99+' : unread}
         </span>
       ) : null}
@@ -222,19 +223,19 @@ const MessageActions: React.FC<{
   onDelete?: () => void;
 }> = ({ isMine, onReply, onEdit, onDelete }) => (
   <div className={cn(
-    'absolute top-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[#1a1d2e] border border-white/10 rounded-lg shadow-xl p-1',
+    'absolute top-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-card border border-black/10 rounded-lg shadow-xl p-1',
     isMine ? 'right-full mr-2' : 'left-full ml-2'
   )}>
-    <button onClick={onReply} title="Répondre" className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
+    <button onClick={onReply} title="Répondre" className="p-1.5 rounded-md hover:bg-black/5 text-gray-500 hover:text-foreground transition-colors">
       <Reply size={13} />
     </button>
     {isMine && onEdit && (
-      <button onClick={onEdit} title="Modifier" className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-indigo-300 transition-colors">
+      <button onClick={onEdit} title="Modifier" className="p-1.5 rounded-md hover:bg-black/5 text-gray-500 hover:text-primary transition-colors">
         <Edit2 size={13} />
       </button>
     )}
     {isMine && onDelete && (
-      <button onClick={onDelete} title="Supprimer" className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-red-300 transition-colors">
+      <button onClick={onDelete} title="Supprimer" className="p-1.5 rounded-md hover:bg-black/5 text-gray-500 hover:text-red-600 transition-colors">
         <Trash2 size={13} />
       </button>
     )}
@@ -304,8 +305,8 @@ const MessageBubble: React.FC<{
           <div className={cn(
             'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
             isMine
-              ? 'bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-br-sm'
-              : 'bg-white/[0.06] text-gray-100 border border-white/[0.06] rounded-bl-sm'
+              ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-br-sm shadow-sm'
+              : 'bg-white text-foreground border border-black/[0.08] shadow-sm rounded-bl-sm'
           )}>
             {message.content}
             {message.isEdited && <span className="text-[9px] opacity-50 ml-1">(modifié)</span>}
@@ -317,7 +318,7 @@ const MessageBubble: React.FC<{
                   const isImage = attach.type?.startsWith('image/');
                   if (isImage) {
                     return (
-                      <div key={idx} className="relative rounded-lg overflow-hidden border border-white/10 max-w-sm mt-1">
+                      <div key={idx} className="relative rounded-lg overflow-hidden border border-black/10 max-w-sm mt-1">
                         <a href={attach.url} target="_blank" rel="noopener noreferrer" className="block">
                           <img
                             src={attach.url}
@@ -330,11 +331,11 @@ const MessageBubble: React.FC<{
                   }
 
                   return (
-                    <div key={idx} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-3 max-w-xs mt-1">
-                      <Paperclip size={18} className="text-indigo-400 shrink-0" />
+                    <div key={idx} className="flex items-center gap-3 bg-black/5 border border-black/10 rounded-xl p-3 max-w-xs mt-1">
+                      <Paperclip size={18} className="text-primary shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-white truncate">{attach.name}</p>
-                        <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                        <p className="text-xs font-semibold text-foreground truncate">{attach.name}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
                           {(attach.size / 1024).toFixed(1)} KB
                         </p>
                       </div>
@@ -343,7 +344,7 @@ const MessageBubble: React.FC<{
                         download={attach.name}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 rounded-lg hover:bg-white/10 text-indigo-400 hover:text-indigo-300 transition-colors"
+                        className="p-1 rounded-lg hover:bg-black/10 text-primary transition-colors"
                         title="Télécharger"
                       >
                         <Download size={14} />
@@ -369,11 +370,11 @@ const MessageBubble: React.FC<{
 
 const DateDivider: React.FC<{ label: string }> = ({ label }) => (
   <div className="flex items-center gap-3 py-3">
-    <div className="flex-1 h-px bg-white/[0.04]" />
-    <span className="text-[10px] text-muted-foreground/60 font-medium px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.04]">
+    <div className="flex-1 h-px bg-black/[0.06]" />
+    <span className="text-[10px] text-muted-foreground font-medium px-3 py-1 rounded-full bg-card border border-black/[0.06] shadow-sm">
       {label}
     </span>
-    <div className="flex-1 h-px bg-white/[0.04]" />
+    <div className="flex-1 h-px bg-black/[0.06]" />
   </div>
 );
 
@@ -429,11 +430,11 @@ const NewConversationDialog: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-[450px] bg-[#16192a] border border-white/10 rounded-2xl shadow-2xl p-6 animate-scale-in" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-[450px] bg-card border border-black/10 rounded-2xl shadow-2xl p-6 animate-scale-in" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold text-white text-base">Nouvelle Discussion</h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-white transition-colors">
+          <h3 className="font-bold text-foreground text-base">Nouvelle Discussion</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -477,11 +478,11 @@ const NewConversationDialog: React.FC<{
                 <button
                   key={u.id}
                   onClick={() => onSelectUser(u.id)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5 text-left transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 text-left transition-colors"
                 >
                   <Avatar name={`${u.firstName} ${u.lastName}`} size="sm" />
                   <div>
-                    <p className="text-sm font-medium text-white">{u.firstName} {u.lastName}</p>
+                    <p className="text-sm font-medium text-foreground">{u.firstName} {u.lastName}</p>
                     <p className="text-xs text-muted-foreground">{u.email}</p>
                   </div>
                 </button>
@@ -592,6 +593,7 @@ export const ChatPage: React.FC = () => {
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null);
   const [showNewDm, setShowNewDm] = useState(false);
   const [showMemberPanel, setShowMemberPanel] = useState(false);
+  const [callDuration, setCallDuration] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -624,7 +626,7 @@ export const ChatPage: React.FC = () => {
   const { data: allUsers = [] } = useQuery({
     queryKey: ['users-for-chat'],
     queryFn: async () => {
-      const res = await api.get<{ data: any[] }>('/users');
+      const res = await api.get<{ data: any[] }>('/users/chat/directory');
       return res.data.data ?? [];
     },
   });
@@ -646,7 +648,7 @@ export const ChatPage: React.FC = () => {
   } = useChatSocket(activeRoomId);
 
   const {
-    callState, incomingCall, isVideo, isMuted, isCameraOff, isScreenSharing,
+    callState, incomingCall, participants, isMuted, isCameraOff, remoteCameraOff, isScreenSharing,
     localVideoRef, remoteVideoRef,
     startCall, acceptCall, rejectCall, endCall, toggleMute, toggleCamera, toggleScreenShare,
   } = useWebRTC(socketRef, user?.id ?? '', user ? `${user.firstName} ${user.lastName}` : '');
@@ -669,6 +671,25 @@ export const ChatPage: React.FC = () => {
   useEffect(() => {
     if (activeRoomId) markRead();
   }, [activeRoomId, markRead]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval>;
+    if (callState === 'connected') {
+      setCallDuration(0);
+      timer = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setCallDuration(0);
+    }
+    return () => clearInterval(timer);
+  }, [callState]);
+
+  const formatCallDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleSend = useCallback(() => {
     const trimmed = inputValue.trim();
@@ -834,33 +855,37 @@ export const ChatPage: React.FC = () => {
     <>
       {/* Incoming Call Dialog */}
       {incomingCall && callState === 'ringing' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md">
-          <div className="bg-[#16192a] border border-white/10 rounded-2xl shadow-2xl p-6 w-[360px] text-center space-y-6 animate-scale-in">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xl animate-pulse">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md">
+          <div className="bg-card border border-black/10 rounded-3xl shadow-2xl p-8 w-[380px] text-center space-y-8 animate-scale-in relative overflow-hidden">
+            {/* Ringing waves animation wrapper */}
+            <div className="relative flex justify-center items-center h-28">
+              <div className="absolute w-24 h-24 rounded-full bg-primary/10 animate-ping duration-1000" />
+              <div className="absolute w-20 h-20 rounded-full bg-primary/20 animate-ping duration-1000 delay-300" />
+              <div className="absolute w-16 h-16 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center font-bold text-white text-2xl shadow-xl shadow-primary/30 z-10">
                 {incomingCall.callerName.split(' ').map(n => n[0]).join('').toUpperCase()}
               </div>
-              <div>
-                <h4 className="text-base font-bold text-white">{incomingCall.callerName}</h4>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Appel {incomingCall.isVideo ? 'vidéo' : 'audio'} entrant...
-                </p>
-              </div>
             </div>
-            <div className="flex items-center justify-center gap-4">
+            <div>
+              <h4 className="text-lg font-bold text-foreground">{incomingCall.callerName}</h4>
+              <p className="text-xs text-muted-foreground mt-1.5 flex items-center justify-center gap-1.5 font-medium">
+                {incomingCall.isVideo ? <Video size={14} className="text-primary" /> : <Phone size={14} className="text-primary" />}
+                Appel {incomingCall.isVideo ? 'vidéo' : 'audio'} entrant...
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-5 pt-2">
               <button
                 onClick={rejectCall}
-                className="w-12 h-12 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-all hover:scale-105 shadow-lg shadow-rose-500/20"
-                title="Décliner"
+                className="w-14 h-14 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg shadow-rose-500/25 active:scale-95"
+                title="Décliner l'appel"
               >
-                <PhoneOff size={18} />
+                <PhoneOff size={20} />
               </button>
               <button
                 onClick={acceptCall}
-                className="w-12 h-12 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-all hover:scale-105 shadow-lg shadow-emerald-500/20"
-                title="Accepter"
+                className="w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg shadow-emerald-500/25 active:scale-95 animate-bounce"
+                title="Accepter l'appel"
               >
-                {incomingCall.isVideo ? <Video size={18} /> : <Phone size={18} />}
+                {incomingCall.isVideo ? <Video size={20} /> : <Phone size={20} />}
               </button>
             </div>
           </div>
@@ -869,39 +894,62 @@ export const ChatPage: React.FC = () => {
 
       {/* Call Overlay */}
       {callState !== 'idle' && callState !== 'ringing' && (
-        <div className="fixed inset-0 z-40 bg-black/90 backdrop-blur-lg flex flex-col justify-between p-6">
-          <div className="flex items-center justify-between text-white">
-            <div>
-              <h3 className="font-bold text-sm">Appel en cours</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {callState === 'calling' ? 'Appel de...' : 'Connecté'}
-              </p>
+        <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-2xl flex flex-col justify-between p-8 text-foreground select-none border border-black/10 shadow-2xl animate-fade-in">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-black/[0.06] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <div>
+                <h3 className="font-bold text-base text-foreground">{activeRoomName}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {callState === 'calling' ? 'Appel en cours...' : `Appel connecté · ${formatCallDuration(callDuration)}`}
+                </p>
+              </div>
+            </div>
+            {/* Show participants who joined the call */}
+            <div className="flex items-center gap-2 bg-black/[0.03] px-3.5 py-1.5 rounded-full border border-black/[0.05]">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mr-1">En ligne ({participants.length}):</span>
+              <div className="flex -space-x-1.5 overflow-hidden">
+                {participants.map((p) => (
+                  <div
+                    key={p.id}
+                    className="w-6 h-6 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-[9px] border-2 border-white uppercase"
+                    title={p.name}
+                  >
+                    {p.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center my-6 gap-6 min-h-0 relative">
-            {/* Remote Video */}
-            <div className="relative flex-1 max-w-4xl h-full bg-white/5 rounded-2xl overflow-hidden border border-white/10 flex items-center justify-center">
-              {isVideo ? (
-                <video
-                  ref={remoteVideoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-                  <Phone size={36} className="animate-pulse" />
+          {/* Video / Profile Canvas */}
+          <div className="flex-1 flex items-center justify-center my-8 gap-6 min-h-0 relative">
+            {/* Remote Screen */}
+            <div className="relative flex-1 max-w-5xl h-full bg-slate-100/60 rounded-3xl overflow-hidden border border-black/[0.08] flex items-center justify-center shadow-inner">
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                playsInline
+                className={cn("w-full h-full object-cover rounded-3xl", remoteCameraOff && "hidden")}
+              />
+              {remoteCameraOff && (
+                <div className="relative flex flex-col items-center gap-4 animate-fade-in">
+                  <div className="absolute w-36 h-36 rounded-full bg-primary/5 animate-pulse duration-1000" />
+                  <div className="w-28 h-28 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-lg">
+                    <Phone size={44} className="animate-pulse" />
+                  </div>
+                  <p className="text-sm font-semibold text-muted-foreground mt-2">Caméra éteinte</p>
                 </div>
               )}
-              <div className="absolute bottom-4 left-4 bg-black/60 px-3 py-1 rounded-lg text-xs text-white">
+              <div className="absolute bottom-6 left-6 bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-xl text-xs font-semibold text-foreground border border-black/[0.08] shadow-sm">
                 Correspondant
               </div>
             </div>
 
-            {/* Local Video (picture-in-picture) */}
-            {isVideo && (
-              <div className="w-64 h-48 bg-black border border-white/15 rounded-2xl overflow-hidden absolute top-4 right-4 shadow-2xl z-50">
+            {/* Local picture-in-picture (Pip) */}
+            {!isCameraOff && (
+              <div className="w-72 h-52 bg-slate-200 border border-black/[0.08] rounded-2xl overflow-hidden absolute bottom-6 right-6 shadow-2xl z-20 hover:scale-105 transition-transform duration-200 animate-fade-in">
                 <video
                   ref={localVideoRef}
                   autoPlay
@@ -909,55 +957,59 @@ export const ChatPage: React.FC = () => {
                   muted
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[10px] text-white">
+                <div className="absolute bottom-3 left-3 bg-white/85 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-semibold text-foreground border border-black/[0.08]">
                   Vous {isMuted && '(Muet)'}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Call Controls */}
-          <div className="flex items-center justify-center gap-4">
-            <button
-              onClick={toggleMute}
-              className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center transition-all',
-                isMuted ? 'bg-red-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'
-              )}
-            >
-              {isMuted ? <MicOff size={18} /> : <Mic size={18} />}
-            </button>
+          {/* Controls Dock */}
+          <div className="flex justify-center items-center pb-4">
+            <div className="bg-white/85 backdrop-blur-xl border border-black/[0.08] px-8 py-3.5 rounded-full flex items-center gap-5 shadow-2xl">
+              <button
+                onClick={toggleMute}
+                className={cn(
+                  'w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95',
+                  isMuted ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-black/5 text-foreground hover:bg-black/10'
+                )}
+                title={isMuted ? 'Activer le micro' : 'Couper le micro'}
+              >
+                {isMuted ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
 
-            {isVideo && (
               <button
                 onClick={toggleCamera}
                 className={cn(
-                  'w-12 h-12 rounded-full flex items-center justify-center transition-all',
-                  isCameraOff ? 'bg-red-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'
+                  'w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95',
+                  isCameraOff ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-black/5 text-foreground hover:bg-black/10'
                 )}
+                title={isCameraOff ? 'Activer la caméra' : 'Couper la caméra'}
               >
                 {isCameraOff ? <VideoOff size={18} /> : <Video size={18} />}
               </button>
-            )}
 
-            {isVideo && (
               <button
                 onClick={toggleScreenShare}
                 className={cn(
-                  'w-12 h-12 rounded-full flex items-center justify-center transition-all',
-                  isScreenSharing ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'
+                  'w-12 h-12 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95',
+                  isScreenSharing ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-black/5 text-foreground hover:bg-black/10'
                 )}
+                title={isScreenSharing ? 'Arrêter le partage' : 'Partager l\'écran'}
               >
                 <Monitor size={18} />
               </button>
-            )}
 
-            <button
-              onClick={endCall}
-              className="w-12 h-12 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all shadow-lg shadow-red-600/20"
-            >
-              <PhoneOff size={18} />
-            </button>
+              <div className="h-6 w-px bg-black/10 mx-1" />
+
+              <button
+                onClick={endCall}
+                className="w-12 h-12 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center transition-all hover:scale-110 shadow-lg shadow-rose-600/25 active:scale-95"
+                title="Raccrocher"
+              >
+                <PhoneOff size={18} />
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -981,14 +1033,17 @@ export const ChatPage: React.FC = () => {
         className="hidden"
       />
 
-      <div className="h-[calc(100vh-7rem)] flex -m-6 overflow-hidden bg-[#0f1117]">
+      <div className="h-screen flex overflow-hidden bg-background">
         {/* ── Sidebar ──────────────────────────────────────────────────── */}
-        <aside className="w-64 shrink-0 flex flex-col border-r border-white/[0.05] bg-white/[0.008]">
+        <aside className="w-64 shrink-0 flex flex-col border-r border-black/[0.06] bg-card">
           {/* Header */}
-          <div className="h-14 flex items-center justify-between px-4 border-b border-white/[0.05] shrink-0">
+          <div className="h-14 flex items-center justify-between px-4 border-b border-black/[0.06] shrink-0">
             <div className="flex items-center gap-2">
-              <MessageSquare size={15} className="text-indigo-400" />
-              <h2 className="text-sm font-bold text-white">Espace de travail</h2>
+              <Link to="/" className="p-1.5 rounded-lg text-gray-500 hover:text-foreground hover:bg-black/5 transition-colors mr-1" title="Retour au tableau de bord">
+                <ArrowLeft size={14} />
+              </Link>
+              <MessageSquare size={15} className="text-primary" />
+              <h2 className="text-sm font-bold text-foreground">Messagerie</h2>
             </div>
             <div className="flex items-center gap-2">
               <div className={cn('w-1.5 h-1.5 rounded-full', isChatConnected ? 'bg-emerald-400' : 'bg-gray-600')} />
@@ -1034,12 +1089,12 @@ export const ChatPage: React.FC = () => {
                       <button
                         key={u.id}
                         onClick={() => { handleNewDm(u.id); setSearchQuery(''); }}
-                        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-white/[0.04] transition-all text-left group"
+                        className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-black/[0.04] transition-all text-left group"
                       >
                         <Avatar name={`${u.firstName} ${u.lastName}`} size="xs" online={onlineUserIds.includes(u.id)} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-white truncate">{u.firstName} {u.lastName}</p>
-                          <p className="text-[10px] text-muted-foreground/60 truncate">
+                          <p className="text-xs font-semibold text-foreground truncate">{u.firstName} {u.lastName}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">
                             {u.employeeProfile?.jobTitle || u.role?.description || 'Membre'}
                           </p>
                         </div>
@@ -1149,10 +1204,10 @@ export const ChatPage: React.FC = () => {
           </div>
 
           {/* New Discussion Button */}
-          <div className="px-3 py-3 border-t border-white/[0.05] shrink-0">
+          <div className="px-3 py-3 border-t border-black/[0.06] shrink-0">
             <button
               onClick={() => setShowNewDm(true)}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.05] text-muted-foreground hover:text-white transition-all text-xs font-medium"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-black/[0.03] hover:bg-black/[0.06] border border-black/[0.06] text-foreground transition-all text-xs font-medium"
             >
               <Plus size={13} />
               Nouvelle Discussion
@@ -1165,7 +1220,7 @@ export const ChatPage: React.FC = () => {
           {activeRoom ? (
             <>
               {/* Chat Header */}
-              <div className="h-14 flex items-center justify-between px-5 border-b border-white/[0.05] shrink-0 bg-white/[0.01]">
+              <div className="h-14 flex items-center justify-between px-5 border-b border-black/[0.06] shrink-0 bg-card">
                 <div className="flex items-center gap-3">
                   <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', getRoomColor(activeRoomType))}>
                     {activeRoomType === 'DIRECT' ? (
@@ -1175,10 +1230,10 @@ export const ChatPage: React.FC = () => {
                     ) : getRoomIcon(activeRoomType)}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                       {activeRoomName}
                       {activeRoomType === 'DIRECT' && (
-                        <span className="text-[10px] font-normal text-muted-foreground/80 bg-white/5 border border-white/10 rounded-full px-2 py-0.5">
+                        <span className="text-[10px] font-normal text-foreground bg-black/5 border border-black/10 rounded-full px-2 py-0.5">
                           {(() => {
                             const other = activeRoom.members?.find(m => m.userId !== user?.id);
                             const role = other?.user.role?.description || other?.user.role?.name;
@@ -1323,17 +1378,17 @@ export const ChatPage: React.FC = () => {
                   )}
 
                   {/* Input */}
-                  <div className="px-5 py-4 border-t border-white/[0.05] shrink-0">
+                  <div className="px-5 py-4 border-t border-black/[0.06] shrink-0 bg-card">
                     {/* File Attachment Previews */}
                     {attachedFiles.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-2.5">
                         {attachedFiles.map((file, idx) => (
-                          <div key={idx} className="relative flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white max-w-[200px] group">
+                          <div key={idx} className="relative flex items-center gap-2 bg-black/5 border border-black/10 rounded-xl px-3 py-1.5 text-xs text-foreground max-w-[200px] group">
                             <span className="truncate flex-1">{file.name}</span>
                             <button
                               type="button"
                               onClick={() => setAttachedFiles((prev) => prev.filter((_, i) => i !== idx))}
-                              className="text-gray-400 hover:text-red-400 shrink-0"
+                              className="text-gray-400 hover:text-red-500 shrink-0"
                             >
                               <X size={12} />
                             </button>
@@ -1343,18 +1398,18 @@ export const ChatPage: React.FC = () => {
                     )}
 
                     {isUploading && (
-                      <div className="text-xs text-indigo-400 mb-2 px-1 flex items-center gap-2 animate-pulse">
-                        <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping" />
+                      <div className="text-xs text-primary mb-2 px-1 flex items-center gap-2 animate-pulse">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
                         Téléchargement des fichiers...
                       </div>
                     )}
 
-                    <div className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.08] rounded-2xl px-4 py-2.5 focus-within:border-indigo-500/40 transition-colors">
+                    <div className="flex items-center gap-3 bg-white border border-black/[0.12] shadow-sm rounded-2xl px-4 py-2.5 focus-within:border-primary/50 transition-colors">
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="text-gray-500 hover:text-gray-300 transition-colors shrink-0 disabled:opacity-50"
+                        className="text-gray-400 hover:text-foreground transition-colors shrink-0 disabled:opacity-50"
                         title="Joindre un fichier"
                       >
                         <Paperclip size={16} />
@@ -1366,12 +1421,12 @@ export const ChatPage: React.FC = () => {
                         onChange={(e) => { setInputValue(e.target.value); handleTyping(); }}
                         onKeyDown={handleKeyDown}
                         placeholder={editingMessage ? 'Modifier le message...' : `Message dans ${activeRoomName}...`}
-                        className="flex-1 bg-transparent text-sm text-white placeholder-muted-foreground/50 outline-none"
+                        className="flex-1 bg-transparent text-sm text-foreground placeholder-muted-foreground outline-none"
                       />
-                      <button className="text-gray-500 hover:text-gray-300 transition-colors shrink-0">
+                      <button className="text-gray-400 hover:text-foreground transition-colors shrink-0">
                         <Smile size={16} />
                       </button>
-                      <button className="text-gray-500 hover:text-gray-300 transition-colors shrink-0">
+                      <button className="text-gray-400 hover:text-foreground transition-colors shrink-0">
                         <AtSign size={16} />
                       </button>
                       <button
@@ -1380,37 +1435,37 @@ export const ChatPage: React.FC = () => {
                         className={cn(
                           'w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0',
                           canSend
-                            ? 'bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/30'
-                            : 'bg-white/[0.04] text-muted-foreground cursor-not-allowed'
+                            ? 'bg-primary text-white hover:brightness-110 shadow-lg shadow-primary/20'
+                            : 'bg-black/[0.04] text-muted-foreground cursor-not-allowed'
                         )}
                       >
                         <Send size={13} />
                       </button>
                     </div>
-                    <p className="text-[10px] text-muted-foreground/40 mt-1.5 px-1">
-                      <kbd className="px-1 py-0.5 bg-white/5 rounded text-[9px] border border-white/10">Entrée</kbd> pour envoyer &nbsp;·&nbsp;
-                      <kbd className="px-1 py-0.5 bg-white/5 rounded text-[9px] border border-white/10">Échap</kbd> pour annuler
+                    <p className="text-[10px] text-muted-foreground mt-1.5 px-1">
+                      <kbd className="px-1 py-0.5 bg-black/5 rounded text-[9px] border border-black/10">Entrée</kbd> pour envoyer &nbsp;·&nbsp;
+                      <kbd className="px-1 py-0.5 bg-black/5 rounded text-[9px] border border-black/10">Échap</kbd> pour annuler
                     </p>
                   </div>
                 </div>
 
                 {/* Members Panel */}
                 {showMemberPanel && activeRoom.members && (
-                  <aside className="w-64 border-l border-white/[0.05] bg-white/[0.008] flex flex-col overflow-hidden">
-                    <div className="h-14 flex items-center justify-between px-4 border-b border-white/[0.05]">
-                      <p className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <Users size={13} className="text-indigo-400" /> Membres ({activeRoom.members.length})
+                  <aside className="w-64 border-l border-black/[0.06] bg-card flex flex-col overflow-hidden">
+                    <div className="h-14 flex items-center justify-between px-4 border-b border-black/[0.06]">
+                      <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <Users size={13} className="text-primary" /> Membres ({activeRoom.members.length})
                       </p>
                     </div>
                     <div className="flex-1 overflow-y-auto p-3 space-y-1">
                       {activeRoom.members.map((m) => {
                         const isOnline = onlineUserIds.includes(m.userId);
                         return (
-                          <div key={m.id} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.04] transition-colors">
+                          <div key={m.id} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-black/[0.04] transition-colors">
                             <Avatar name={`${m.user.firstName} ${m.user.lastName}`} size="sm" online={isOnline} />
                             <div className="min-w-0">
-                              <p className="text-xs font-medium text-white truncate">{m.user.firstName} {m.user.lastName}</p>
-                              <p className={cn('text-[10px]', isOnline ? 'text-emerald-400' : 'text-muted-foreground/60')}>
+                              <p className="text-xs font-medium text-foreground truncate">{m.user.firstName} {m.user.lastName}</p>
+                              <p className={cn('text-[10px]', isOnline ? 'text-emerald-700 font-medium' : 'text-muted-foreground')}>
                                 {isOnline ? 'En ligne' : 'Hors ligne'}
                               </p>
                             </div>

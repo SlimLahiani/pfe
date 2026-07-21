@@ -13,52 +13,72 @@ AgencyOS s'articule autour d'une architecture client-serveur robuste avec un dé
 
 ---
 
-## 2. Diagramme de Cas d'Utilisation (Use Case Diagram)
+## 2. Diagramme de Cas d'Utilisation Global (Use Case Diagram)
 
-Ce diagramme décrit les interactions principales des différents acteurs (Administrateurs/Gérants, Secrétaires, Collaborateurs) avec la plateforme AgencyOS.
+Ce diagramme exhaustif décrit les droits et interactions de chaque rôle (Gérant, RH, Comptable, Secrétaire, Chef de Projet, Collaborateur, Stagiaire) avec les différentes pages et fonctionnalités du système.
 
 ```mermaid
 leftToRightDirection
-actor "Gérant / Administrateur" as Gerant
+actor "Gérant / CEO" as Gerant
+actor "Responsable RH" as RH
+actor "Responsable Financier" as Financier
 actor "Secrétaire" as Secretaire
-actor "Collaborateur / Employé" as Collaborateur
+actor "Chef de Projet" as PM
+actor "Collaborateur" as Collaborateur
+actor "Stagiaire" as Stagiaire
 
 rectangle AgencyOS {
-  usecase "Gérer les utilisateurs et profils" as UC_Users
-  usecase "Créer et affecter des Tâches" as UC_CreateTasks
-  usecase "Glisser-déposer (Drag & Drop) les tâches" as UC_DragTasks
-  usecase "Consulter son tableau de bord" as UC_Dashboard
-  usecase "Gérer la facturation et devis (PDF)" as UC_Finance
-  usecase "Démarrer une discussion (DM / Groupe)" as UC_Chat
-  usecase "Passer des appels Audio/Vidéo" as UC_Calls
-  usecase "Activer/Désactiver caméra en appel" as UC_ToggleCam
+  usecase "Gérer les utilisateurs et habilitations" as UC_UserAdmin
+  usecase "Visualiser l'Intelligence Décisionnelle (IA)" as UC_DecisionIA
+  
+  usecase "Gérer les contrats et dossiers RH" as UC_RHAdmin
+  usecase "Valider les demandes de congé" as UC_LeaveApproval
+  usecase "Soumettre une demande de congé" as UC_LeaveSubmit
+  
+  usecase "Créer des factures et devis" as UC_FinanceDocs
+  usecase "Approuver les factures et budgets" as UC_FinanceApprove
+  
+  usecase "Gérer les Leads & Clients (CRM)" as UC_CRM
+  usecase "Organiser l'agenda & les réunions" as UC_Calendar
+  
+  usecase "Créer des projets et affecter des budgets" as UC_ProjectCreate
+  usecase "Créer et affecter des Tâches" as UC_TasksAdmin
+  usecase "Gérer ses tâches (Kanban Drag & Drop)" as UC_TasksUser
+  
+  usecase "Discuter en direct (DM & Groupes)" as UC_Chat
+  usecase "Passer des appels audio/vidéo avec caméra" as UC_Calls
 }
 
-Gerant --> UC_Users
-Gerant --> UC_CreateTasks
-Gerant --> UC_Finance
+Gerant --> UC_UserAdmin
+Gerant --> UC_DecisionIA
+Gerant --> UC_FinanceApprove
 
-Secretaire --> UC_Finance
-Secretaire --> UC_CreateTasks
+RH --> UC_RHAdmin
+RH --> UC_LeaveApproval
 
-Collaborateur --> UC_DragTasks
-Collaborateur --> UC_Dashboard
+Financier --> UC_FinanceDocs
+Financier --> UC_FinanceApprove
 
-UC_Chat <-- Collaborateur
-UC_Chat <-- Secretaire
-UC_Chat <-- Gerant
+Secretaire --> UC_CRM
+Secretaire --> UC_Calendar
 
-UC_Calls <-- Collaborateur
-UC_Calls <-- Gerant
+PM --> UC_ProjectCreate
+PM --> UC_TasksAdmin
 
-UC_ToggleCam <-- UC_Calls
+Collaborateur --> UC_LeaveSubmit
+Collaborateur --> UC_TasksUser
+Collaborateur --> UC_Chat
+Collaborateur --> UC_Calls
+
+Stagiaire --> UC_TasksUser
+Stagiaire --> UC_Chat
 ```
 
 ---
 
-## 3. Diagramme de Classes (Class Diagram)
+## 3. Diagramme de Classes Détaillé (Class Diagram)
 
-Ce diagramme représente la structure des données du backend modélisée avec Prisma, exposant les entités de base, leurs attributs et les relations clés.
+Ce diagramme représente la structure complète de la base de données relationnelle et la modélisation des entités sous Prisma.
 
 ```mermaid
 classDiagram
@@ -72,8 +92,6 @@ classDiagram
         +Boolean isActive
         +Boolean isArchived
         +DateTime createdAt
-        +DateTime updatedAt
-        +findChatDirectory()
     }
 
     class Role {
@@ -90,28 +108,14 @@ classDiagram
         +String status
     }
 
-    class ChatRoom {
+    class Project {
         +String id
         +String name
-        +String type
-        +String projectId
-        +DateTime createdAt
-    }
-
-    class ChatRoomMember {
-        +String id
-        +String roomId
-        +String userId
-        +DateTime joinedAt
-    }
-
-    class Message {
-        +String id
-        +String roomId
-        +String senderId
-        +String content
-        +Boolean isDeleted
-        +DateTime createdAt
+        +String description
+        +Decimal budget
+        +String status
+        +DateTime startDate
+        +DateTime endDate
     }
 
     class Task {
@@ -121,22 +125,127 @@ classDiagram
         +String status
         +String priority
         +DateTime dueDate
-        +String projectId
-        +String assigneeId
+    }
+
+    class Lead {
+        +String id
+        +String companyName
+        +String contactName
+        +String status
+        +Decimal estimatedValue
+    }
+
+    class Client {
+        +String id
+        +String companyName
+        +String industry
+        +String taxId
+    }
+
+    class Invoice {
+        +String id
+        +String invoiceNumber
+        +Decimal amount
+        +String status
+        +DateTime dueDate
+    }
+
+    class Quote {
+        +String id
+        +String quoteNumber
+        +Decimal amount
+        +String status
+    }
+
+    class LeaveRequest {
+        +String id
+        +String type
+        +DateTime startDate
+        +DateTime endDate
+        +String status
+    }
+
+    class ChatRoom {
+        +String id
+        +String name
+        +String type
+    }
+
+    class Message {
+        +String id
+        +String content
+        +DateTime createdAt
     }
 
     User "1" --> "1" Role : possède
-    User "1" --> "0..1" EmployeeProfile : a
-    User "1" <-- "many" ChatRoomMember : membre
-    ChatRoom "1" <-- "many" ChatRoomMember : contient
+    User "1" --> "0..1" EmployeeProfile : possède
+    User "1" <-- "many" Task : assigné
+    Project "1" <-- "many" Task : contient
+    Lead "1" --> "0..1" Client : converti en
+    Client "1" <-- "many" Invoice : reçoit
+    Client "1" <-- "many" Quote : reçoit
+    User "1" <-- "many" LeaveRequest : soumet
     ChatRoom "1" <-- "many" Message : contient
     User "1" <-- "many" Message : envoie
-    User "1" <-- "many" Task : se voit assigner
 ```
 
 ---
 
-## 4. Diagramme de Séquence : Signalisation d'Appel WebRTC
+## 4. Diagramme de Séquence : Workflow d'Approbation de Congé
+
+Ce diagramme montre comment une demande de congé soumise par un Collaborateur transite par le backend pour être validée par le Responsable RH.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Collaborateur
+    participant API as Backend (NestJS)
+    participant DB as Base de Données (PostgreSQL)
+    actor RH as Responsable RH
+
+    C->>API: Soumettre demande de congé (Type, Dates)
+    API->>DB: Créer LeaveRequest (Status: PENDING)
+    API->>API: Générer Notification pour le RH
+    API-->>C: Confirmer la soumission (Status PENDING affiché sur le Portail)
+
+    Note over RH: Le RH ouvre son tableau de bord / Centre de Décisions
+    RH->>API: Approuver la demande (ID de demande)
+    API->>DB: Mettre à jour LeaveRequest (Status: APPROVED)
+    API->>DB: Déduire le nombre de jours du solde de congés (EmployeeProfile)
+    API->>API: Déclencher Notification de confirmation à l'employé
+    API-->>RH: Afficher confirmation d'approbation
+    API->>C: Notification "Votre congé a été approuvé !" (Temps Réel via Socket.IO)
+```
+
+---
+
+## 5. Diagramme de Séquence : cycle de vie d'une Tâche (Kanban Drag & Drop)
+
+Ce diagramme montre la création d'une tâche par le Chef de Projet et sa mise à jour dynamique par glisser-déposer (Drag & Drop) par le Collaborateur.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor PM as Chef de Projet
+    participant API as Backend (NestJS)
+    participant DB as Base de Données
+    actor C as Collaborateur
+
+    PM->>API: Créer Tâche (Titre, Projet, Priorité, Assigné à: Collaborateur)
+    API->>DB: Enregistrer Task (Status: TODO)
+    API-->>PM: Tâche créée avec succès
+    API->>C: Tâche visible sur le Kanban du Collaborateur
+
+    Note over C: Le Collaborateur commence la tâche et la glisse dans "En cours"
+    C->>C: Glisser-déposer la carte sur la colonne "En cours" (Drag & Drop)
+    C->>API: PUT /tasks/:id (Body: { status: 'IN_PROGRESS' })
+    API->>DB: Mettre à jour Task (status = 'IN_PROGRESS')
+    API-->>C: Confirmer la mise à jour (Bordure s'illumine en vert, Kanban à jour)
+```
+
+---
+
+## 6. Diagramme de Séquence : Signalisation d'Appel WebRTC
 
 Le diagramme ci-dessous illustre le protocole complet d'établissement d'un appel audio/vidéo avec Messenger-level Camera Toggle (activation/désactivation dynamique de la caméra en temps réel sans coupure de flux).
 
@@ -177,29 +286,7 @@ sequenceDiagram
 
 ---
 
-## 5. Fonctionnalités et Modules Développés
-
-### A. Messagerie et Discussions Privées (DMs)
-- **Annuaire de chat sans restriction** : Intégration de la route `GET /users/chat/directory` pour permettre à tous les utilisateurs d'initier un DM avec n'importe quel membre actif sans nécessiter de permissions d'administration globale (`users:read`).
-- **Gestion du plein écran** : Suppression du header et de la barre latérale globale sur la route `/chat`, maximisant la hauteur de la fenêtre (`h-screen`).
-- **Retour au tableau de bord** : Ajout d'un bouton de navigation retour (`ArrowLeft`) au-dessus de la liste de canaux.
-
-### B. Moteur d'Appel WebRTC (Messenger-level)
-- **Aiguillage individuel de signalisation** : Remplacement des diffusions par canal socket (où les membres inactifs rataient les notifications) par des alertes ciblées directement sur l'identifiant de socket actif de chaque membre connecté dans la base de données.
-- **Gestion dynamique de la caméra** : Capturation initiale continue des pistes vidéo. L'activation ou désactivation de la caméra désactive la piste sans détruire la connexion WebRTC, déclenchant des notifications socket en temps réel aux pairs connectés pour permuter entre l'avatar de profil et le flux vidéo en direct.
-- **Visualisation moderne** : Thème Light mode premium, flous d'arrière-plan, minuteur de durée d'appel, et bouton de raccrochage flottant.
-
-### C. Kanban Interactif avec Glisser-Déposer (Drag & Drop)
-- **Fluidité UX** : Intégration de l'API HTML5 Drag and Drop standard sur les cartes de tâches du Kanban.
-- **Changement de statut en direct** : Le glissement d'une carte vers une colonne (À faire, En cours, En révision, Fait, Bloqué) déclenche automatiquement une requête de mutation API asynchrone pour mettre à jour la tâche en base de données.
-- **Animation d'accroche** : Survol des colonnes avec rétroaction visuelle (bordures illuminées et fond surligné).
-
-### D. Templates de Documents PDF
-- **Identité visuelle** : Intégration transparente du logo de l'entreprise sur tous les documents PDF générés (Factures, Devis, Rapports), avec repositionnement des en-têtes pour un rendu professionnel.
-
----
-
-## 6. Lancement Local
+## 7. Lancement Local
 
 ### Backend (NestJS)
 ```bash

@@ -153,9 +153,9 @@ export const LoginPage: React.FC = () => {
 
         <div className="w-full max-w-md z-10 space-y-8">
           
-          {/* Brand Logo & Intro for mobile screens (hidden on desktop lg) */}
-          <div className="lg:hidden text-center flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-            <div className="bg-primary/5 p-3 rounded-3xl border border-primary/10 mb-4 shadow-sm">
+          {/* Brand Logo & Intro (Always visible on the white panel side) */}
+          <div className="text-center flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <div className="bg-primary/5 p-3.5 rounded-3xl border border-primary/10 mb-4 shadow-sm hover:scale-105 transition-transform duration-300">
               <Logo iconSize="md" />
             </div>
             <h2 className="text-3xl font-black text-foreground tracking-tight">CreativArt</h2>

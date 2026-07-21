@@ -6,7 +6,7 @@ import * as z from 'zod';
 import { useAuth } from '../../../context/auth-context';
 import { 
   Lock, Mail, AlertCircle, ArrowRight, ShieldAlert, Sparkles, 
-  Eye, EyeOff, Briefcase, Users, Wallet, PenTool, Code, CheckCircle, Flame, Clock 
+  Eye, EyeOff, Briefcase, Users, Wallet, PenTool, Code 
 } from 'lucide-react';
 import { Logo } from '../../../components/shared/logo';
 
@@ -65,225 +65,208 @@ export const LoginPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex overflow-hidden bg-[#fafafc] select-none">
+    <div className="min-h-screen w-full flex overflow-hidden bg-white select-none">
       
-      {/* LEFT SIDE: Brand Showcase (Visible only on lg screens) */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 bg-primary text-white relative overflow-hidden">
-        {/* Shifting Gradient Mesh */}
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-500/30 rounded-full blur-[120px] animate-blob-1 pointer-events-none" />
-        <div className="absolute bottom-[-15%] right-[-15%] w-[600px] h-[600px] bg-violet-500/20 rounded-full blur-[140px] animate-blob-2 pointer-events-none" />
-        <div className="absolute top-[30%] right-[10%] w-[350px] h-[350px] bg-pink-500/10 rounded-full blur-[110px] animate-blob-3 pointer-events-none" />
+      {/* LEFT SIDE: Brand Showcase (Inspired by user uploaded vector layout) */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16 bg-gradient-to-br from-[#805ad5] via-[#7c3aed] to-[#5b21b6] text-white relative overflow-hidden">
+        
+        {/* Topographic Wave Lines (Vector SVGs at corners) */}
+        <div className="absolute top-0 left-0 w-64 h-64 opacity-25 pointer-events-none">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white">
+            <path d="M10 80 C 40 10, 60 10, 100 80 C 150 130, 80 180, 200 130" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M20 90 C 50 20, 70 20, 110 90 C 160 140, 90 190, 200 150" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M30 100 C 60 30, 80 30, 120 100 C 170 150, 100 200, 200 170" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+          </svg>
+        </div>
+        
+        <div className="absolute bottom-0 right-0 w-80 h-80 opacity-25 pointer-events-none">
+          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white">
+            <path d="M0 120 C 60 180, 130 130, 150 70 C 170 10, 120 0, 200 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M0 135 C 70 195, 140 145, 160 85 C 180 25, 130 15, 200 35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M0 150 C 80 210, 150 160, 170 100 C 190 40, 140 30, 200 50" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+          </svg>
+        </div>
 
-        {/* Floating Particles */}
-        <div className="absolute top-1/4 left-1/3 w-3 h-3 bg-white/20 rounded-full blur-[1px] animate-particle-1" />
-        <div className="absolute bottom-1/3 right-1/4 w-4 h-4 bg-white/10 rounded-full blur-[2px] animate-particle-2" />
+        {/* Scattered Plus and Circle Shapes */}
+        <div className="absolute top-12 left-1/2 text-white/35 font-light text-2xl pointer-events-none animate-pulse">+</div>
+        <div className="absolute bottom-28 left-1/3 text-white/35 font-light text-2xl pointer-events-none animate-pulse" style={{ animationDelay: '1s' }}>+</div>
+        
+        <div className="absolute top-36 right-1/4 w-3.5 h-3.5 border-2 border-white/25 rounded-full pointer-events-none animate-bounce" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-20 left-12 w-4 h-4 border-2 border-white/25 rounded-full pointer-events-none animate-bounce" style={{ animationDuration: '6s' }} />
 
-        {/* Top Branding Logo */}
+        {/* Scattered Dot Grid Matrix */}
+        <div className="absolute top-12 right-12 opacity-30 grid grid-cols-4 gap-1.5 pointer-events-none">
+          {[...Array(16)].map((_, i) => (
+            <div key={i} className="w-1.5 h-1.5 bg-white rounded-full" />
+          ))}
+        </div>
+
+        {/* Top Branding (Transparent PNG, No Background Logo Container) */}
         <div className="z-10 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
-          <div className="bg-white/95 backdrop-blur-md pl-1.5 pr-4 py-1.5 rounded-2xl shadow-lg inline-flex items-center gap-2 border border-white/10 hover:scale-105 transition-all duration-300">
-            <Logo iconSize="sm" />
-            <span className="font-extrabold text-foreground tracking-tight text-sm uppercase">AgencyOS</span>
+          <div className="flex items-center gap-3">
+            <div className="bg-white/10 p-2.5 rounded-2xl border border-white/10 backdrop-blur-md shadow-sm">
+              <Logo iconSize="sm" />
+            </div>
+            <span className="font-black text-xl tracking-tight uppercase text-white">CreativArt</span>
           </div>
         </div>
 
-        {/* Center Headline */}
+        {/* Center Headline (Inspired by Welcome back!) */}
         <div className="z-10 max-w-md space-y-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          <h1 className="text-4xl font-extrabold tracking-tight leading-tight">
-            La plateforme de collaboration pour agences créatives.
+          <h1 className="text-5xl font-black tracking-tight leading-tight">
+            Welcome back!
           </h1>
-          <p className="text-indigo-100 text-sm leading-relaxed font-medium">
-            Gérez vos tâches Kanban, communiquez via des appels en direct, gérez les dossiers RH et la facturation client au même endroit.
+          <p className="text-white/80 text-base leading-relaxed font-semibold">
+            You can sign in to access with your existing account.
           </p>
         </div>
 
-        {/* Bottom Feature highlights with staggered floating animations */}
-        <div className="z-10 max-w-md space-y-3.5 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-          <div className="flex items-center gap-3 bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-card-float" style={{ animationDelay: '0s' }}>
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
-              <Sparkles size={16} />
+        {/* Bottom Feature highlights with float animations */}
+        <div className="z-10 max-w-md space-y-3 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-3.5 rounded-2xl backdrop-blur-md hover:bg-white/10 transition-all duration-300 animate-card-float">
+            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+              <Sparkles size={14} />
             </div>
             <div>
-              <h4 className="font-bold text-xs">Messagerie & Appels en Temps Réel</h4>
-              <p className="text-[10px] text-indigo-200 mt-0.5">Discutez, partagez vos écrans et activez votre caméra instantanément.</p>
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-white">Messagerie & Appels</h4>
+              <p className="text-[10px] text-white/60">Discutez, partagez vos écrans et activez votre caméra.</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-card-float" style={{ animationDelay: '1.5s' }}>
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
-              <Users size={16} />
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-3.5 rounded-2xl backdrop-blur-md hover:bg-white/10 transition-all duration-300 animate-card-float" style={{ animationDelay: '2s' }}>
+            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+              <Users size={14} />
             </div>
             <div>
-              <h4 className="font-bold text-xs">Tableau Kanban Interactif</h4>
-              <p className="text-[10px] text-indigo-200 mt-0.5">Glissez-déposez vos tâches pour modifier instantanément leur statut.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 bg-white/10 border border-white/20 p-4 rounded-2xl backdrop-blur-md hover:bg-white/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg animate-card-float" style={{ animationDelay: '3s' }}>
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0 shadow-inner">
-              <Wallet size={16} />
-            </div>
-            <div>
-              <h4 className="font-bold text-xs">Finance & Facturation Pro</h4>
-              <p className="text-[10px] text-indigo-200 mt-0.5">Émettez des factures avec logo et générez des rapports PDF.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Stat Counter Strip */}
-        <div className="z-10 border-t border-white/10 pt-6 mt-6 flex justify-between items-center text-white animate-fade-in-up" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center gap-2">
-            <CheckCircle size={14} className="text-emerald-400 animate-pulse" />
-            <div className="text-left">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Uptime Réseau</p>
-              <p className="text-xs font-extrabold">99.9% Stable</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Flame size={14} className="text-orange-400 animate-pulse" />
-            <div className="text-left">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Activités</p>
-              <p className="text-xs font-extrabold">10k+ Tâches</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock size={14} className="text-sky-400 animate-pulse" />
-            <div className="text-left">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">Communication</p>
-              <p className="text-xs font-extrabold">En direct</p>
+              <h4 className="font-bold text-[11px] uppercase tracking-wider text-white">Gestion de Projet</h4>
+              <p className="text-[10px] text-white/60">Glissez-déposez vos livrables sur le tableau Kanban.</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* RIGHT SIDE: Interactive Login Form Container */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-[#fafafc] relative overflow-hidden">
-        {/* Dynamic mesh backgrounds for mobile */}
+      {/* RIGHT SIDE: Interactive Login Form Container (White theme inspired by template) */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-white relative overflow-hidden">
+        
+        {/* Mobile Background decoration */}
         <div className="lg:hidden absolute top-[-10%] left-[-10%] w-[350px] h-[350px] bg-primary/10 rounded-full blur-[100px] animate-blob-1 pointer-events-none" />
         <div className="lg:hidden absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-400/8 rounded-full blur-[110px] animate-blob-2 pointer-events-none" />
 
-        {/* Floating particles */}
-        <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-primary/25 rounded-full blur-[0.5px] animate-particle-1" />
-        <div className="absolute bottom-1/4 left-1/4 w-3.5 h-3.5 bg-indigo-400/20 rounded-full blur-[1.5px] animate-particle-2" />
-
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808007_1px,transparent_1px),linear-gradient(to_bottom,#80808007_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
-
-        <div className="w-full max-w-md z-10">
+        <div className="w-full max-w-md z-10 space-y-8">
           
-          {/* Mobile Branding (hidden on desktop lg) */}
-          <div className="lg:hidden text-center mb-8 flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-black/[0.05] text-primary text-xs font-semibold mb-6 shadow-sm">
-              <Sparkles size={12} className="animate-spin text-primary mr-1" style={{ animationDuration: '4s' }} />
-              Portail Interne
+          {/* Brand Logo & Intro for mobile screens (hidden on desktop lg) */}
+          <div className="lg:hidden text-center flex flex-col items-center animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <div className="bg-primary/5 p-3 rounded-3xl border border-primary/10 mb-4 shadow-sm">
+              <Logo iconSize="md" />
             </div>
-            <Logo iconSize="xl" showText={true} className="flex-col !gap-3 text-center items-center justify-center scale-110 mb-1" />
-            <p className="text-muted-foreground text-xs mt-3 font-medium tracking-wide">
+            <h2 className="text-3xl font-black text-foreground tracking-tight">CreativArt</h2>
+            <p className="text-muted-foreground text-xs font-semibold mt-2">
               Le moteur de travail pour les agences créatives modernes.
             </p>
           </div>
 
-          {/* Form Card wrapper with moving glow on hover */}
-          <div 
-            className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-black/[0.06] shadow-[0_0_50px_rgba(99,102,241,0.03)] hover:shadow-[0_0_60px_rgba(99,102,241,0.12)] hover:border-primary/25 transition-all duration-500 animate-fade-in-up"
-            style={{ animationDelay: '300ms' }}
-          >
-            <div className="mb-6">
-              <h2 className="text-2xl font-extrabold text-foreground tracking-tight">Connexion</h2>
-              <p className="text-xs text-muted-foreground mt-1 font-medium">Entrez vos identifiants pour accéder à votre espace.</p>
+          <div className="space-y-6">
+            {/* Page Header */}
+            <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+              <h2 className="text-4xl font-extrabold text-foreground tracking-tight">Sign In</h2>
+              <p className="text-xs text-muted-foreground mt-1.5 font-medium">Entrez vos identifiants pour accéder à votre espace de travail.</p>
             </div>
 
+            {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {error && (
-                <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-700 px-4 py-3 rounded-2xl text-sm animate-fade-in">
-                  <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
-                  <p className="font-medium text-xs">{error}</p>
+                <div className="flex items-start gap-3 bg-red-500/5 border border-red-500/15 text-red-700 px-4 py-3.5 rounded-2xl text-xs animate-fade-in font-medium">
+                  <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
+                  <p>{error}</p>
                 </div>
               )}
 
-              {/* Email Input with underline glow on focus */}
-              <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '350ms' }}>
-                <label className="text-xs font-bold text-foreground/80 tracking-wide">
-                  Adresse Email
-                </label>
+              {/* Email Input - Pill Rounded */}
+              <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
                 <div className="relative group input-underline">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary group-focus-within:scale-105 transition-all duration-300">
+                  <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors">
                     <Mail size={16} />
                   </div>
                   <input
                     type="email"
-                    placeholder="nom@agency.com"
-                    className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-black/10 focus:ring-4 focus:ring-primary/10 focus:border-primary/60 outline-none text-sm transition-all duration-300 bg-black/[0.01] focus:bg-white hover:border-black/20"
+                    placeholder="Username or email"
+                    className="w-full pl-11 pr-4 py-3.5 rounded-full border border-black/10 focus:ring-4 focus:ring-primary/5 focus:border-[#7c3aed] outline-none text-sm transition-all duration-300 bg-white hover:border-black/20"
                     {...register('email')}
                     disabled={isLoading}
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-xs text-red-500 flex items-center gap-1 font-medium mt-1">
+                  <p className="text-xs text-red-500 flex items-center gap-1 font-semibold mt-1.5 pl-3">
                     <AlertCircle size={12} /> {errors.email.message}
                   </p>
                 )}
               </div>
 
-              {/* Password Input with underline glow on focus */}
-              <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '420ms' }}>
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-foreground/80 tracking-wide">
-                    Mot de passe
-                  </label>
-                </div>
+              {/* Password Input - Pill Rounded */}
+              <div className="space-y-1.5 animate-fade-in-up" style={{ animationDelay: '380ms' }}>
                 <div className="relative group input-underline">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary group-focus-within:scale-105 transition-all duration-300">
+                  <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-[#7c3aed] transition-colors">
                     <Lock size={16} />
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className="w-full pl-10 pr-10 py-3.5 rounded-xl border border-black/10 focus:ring-4 focus:ring-primary/10 focus:border-primary/60 outline-none text-sm transition-all duration-300 bg-black/[0.01] focus:bg-white hover:border-black/20"
+                    placeholder="Password"
+                    className="w-full pl-11 pr-11 py-3.5 rounded-full border border-black/10 focus:ring-4 focus:ring-primary/5 focus:border-[#7c3aed] outline-none text-sm transition-all duration-300 bg-white hover:border-black/20"
                     {...register('password')}
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95 transition-all"
+                    className="absolute inset-y-0 right-0 pr-4.5 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-xs text-red-500 flex items-center gap-1 font-medium mt-1">
+                  <p className="text-xs text-red-500 flex items-center gap-1 font-semibold mt-1.5 pl-3">
                     <AlertCircle size={12} /> {errors.password.message}
                   </p>
                 )}
               </div>
 
-              {/* Submit Button */}
-              <div className="animate-fade-in-up" style={{ animationDelay: '490ms' }}>
+              {/* Remember Me and Forgot Password row */}
+              <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground px-1.5 animate-fade-in-up" style={{ animationDelay: '460ms' }}>
+                <label className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors">
+                  <input type="checkbox" className="rounded border-black/10 text-[#7c3aed] focus:ring-[#7c3aed]" />
+                  <span>Remember me</span>
+                </label>
+                <a href="#forgot" className="text-muted-foreground hover:text-[#7c3aed] transition-colors">Forgot password?</a>
+              </div>
+
+              {/* Sign In Button - Pill Rounded Gradient */}
+              <div className="animate-fade-in-up" style={{ animationDelay: '540ms' }}>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full relative overflow-hidden bg-primary hover:bg-primary/95 text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/30 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none text-sm group"
+                  className="w-full relative overflow-hidden bg-gradient-to-r from-[#805ad5] to-[#7c3aed] text-white font-bold py-3.5 rounded-full flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/35 hover:brightness-105 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none text-sm group"
                 >
                   {isLoading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   ) : (
                     <>
-                      Se connecter au tableau de bord
+                      Sign In
                       <ArrowRight size={16} className="ml-1 group-hover:translate-x-1.5 transition-transform duration-300" />
                     </>
                   )}
                   {/* Reflection shine sweep */}
-                  <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white/10 opacity-40 group-hover:animate-shine" />
+                  <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white/10 opacity-30 group-hover:animate-shine" />
                 </button>
               </div>
             </form>
 
-            {/* Demo Accounts tab trigger */}
+            {/* Test Accounts Drawer (styled cleanly at bottom) */}
             <div 
               className="mt-8 pt-6 border-t border-black/[0.06] flex flex-col items-center animate-fade-in-up"
-              style={{ animationDelay: '560ms' }}
+              style={{ animationDelay: '620ms' }}
             >
               <button
                 onClick={() => setShowSeedAccounts(!showSeedAccounts)}
-                className="text-xs text-primary/80 hover:text-primary font-bold flex items-center gap-2 transition-colors focus:outline-none hover:scale-105 transform duration-300"
+                className="text-xs text-primary/80 hover:text-[#7c3aed] font-bold flex items-center gap-2 transition-colors focus:outline-none hover:scale-105 transform duration-300"
               >
                 <ShieldAlert size={14} className="text-primary/70" />
                 Identifiants de démonstration ? Afficher
@@ -320,12 +303,12 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile restricted note (hidden on lg desktop) */}
+          {/* Footer note */}
           <p 
-            className="lg:hidden text-center text-[10px] text-muted-foreground font-semibold mt-8 uppercase tracking-wider animate-fade-in-up"
-            style={{ animationDelay: '630ms' }}
+            className="text-center text-[10px] text-muted-foreground font-semibold uppercase tracking-wider animate-fade-in-up"
+            style={{ animationDelay: '700ms' }}
           >
-            Accès restreint · Membres autorisés uniquement
+            Accès sécurisé CreativArt
           </p>
         </div>
       </div>

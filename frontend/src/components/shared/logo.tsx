@@ -22,7 +22,7 @@ export const Logo: React.FC<LogoProps> = ({
       <img
         src="/logo.png"
         alt="CreativArt"
-        className={`${sizeClasses[iconSize]} w-auto object-contain mix-blend-multiply`}
+        className={`${sizeClasses[iconSize]} w-auto object-contain`}
       />
     </div>
   );
